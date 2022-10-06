@@ -23,9 +23,8 @@ function preload ()
 }
 
 var keys;
-var card, card1;
-var pointerover = false;
 var cards_on_board = [];
+
 function create ()
 {
     var bg = this.add.image(1280/2-100, 720/2, 'bg');
@@ -43,6 +42,7 @@ function create ()
         gameObject.y = dragY;
 
     });
+
             
 }
 
@@ -65,7 +65,7 @@ function update ()
 
 function overedCard(cards){
     var return_card = false;
-
+    
     for (card of cards){
         if (card.pointerover){
             return_card = card;
