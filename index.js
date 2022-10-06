@@ -25,15 +25,15 @@ function preload ()
 var keys;
 var card, card1;
 var pointerover = false;
-
+var cards_on_board = [];
 function create ()
 {
     var bg = this.add.image(1280/2-100, 720/2, 'bg');
     bg.setScale(1.5)
 
     
-    card = new Card(this, 718/2, 420/2, 'arc000')
-    card1 = new Card(this, 718/2 + 100, 420/2, 'arc121')
+    cards_on_board.push(new Card(this, 718/2, 420/2, 'arc000'));
+    cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'arc121'));
 
     keys = this.input.keyboard.addKeys('T,F');
    
@@ -48,11 +48,30 @@ function create ()
 
 function update ()
 {   
-    if(Phaser.Input.Keyboard.JustDown(keys.T) && card.pointerover){
-        card.tap()
+    if(Phaser.Input.Keyboard.JustDown(keys.T)){
+        var card = overedCard(cards_on_board);
+        if (card != false){
+            card.tap();
+        }
     }
 
-    if(Phaser.Input.Keyboard.JustDown(keys.F) && card.pointerover){
-        card.flip()
+    if(Phaser.Input.Keyboard.JustDown(keys.F)){
+        var card = overedCard(cards_on_board);
+        if (card != false){
+            card.flip();
+        }
     }
+}
+
+function overedCard(cards){
+    var return_card = false;
+
+    for (card of cards){
+        if (card.pointerover){
+            return_card = card;
+            break;
+        }
+    }
+    
+    return return_card;
 }
