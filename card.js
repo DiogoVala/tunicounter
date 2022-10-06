@@ -22,6 +22,10 @@ export default class Card extends Phaser.GameObjects.Sprite{
             this.card_augmented.setAlpha(0);
             this.pointerover = false;
         });
+
+        this.on('dragstart', function () {
+            scene.children.bringToTop(this)
+        });
     }
 
     tap(){
