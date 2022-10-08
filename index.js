@@ -38,8 +38,13 @@ function create ()
 
     dice = new Dice(this,200,200, 'dice')
 
-    keys = this.input.keyboard.addKeys('T,F,R');
+    keys = this.input.keyboard.addKeys('T,F,R,S');
     numbers = this.input.keyboard.addKeys('ONE,TWO,THREE,FOUR,FIVE,SIX');
+
+    var deckZone = this.add.zone(988, 398).setRectangleDropZone(114, 160);
+    var pitchZone = this.add.zone(860, 398).setRectangleDropZone(114, 160);
+    var graveZone = this.add.zone(988, 228).setRectangleDropZone(114, 160);
+    var banishedZone = this.add.zone(988, 570).setRectangleDropZone(114, 160);
 
     this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
 
@@ -48,7 +53,12 @@ function create ()
 
     });
 
-            
+    this.input.on('drop', function (pointer, gameObject, dropZone) {
+
+        gameObject.x = dropZone.x;
+        gameObject.y = dropZone.y;
+    
+    });
 }
 
 function update ()
@@ -64,6 +74,13 @@ function update ()
         var card = overedCard(cards_on_board);
         if (card != false){
             card.flip();
+        }
+    }
+
+    if(Phaser.Input.Keyboard.JustDown(keys.S) || Phaser.Input.Keyboard.JustUp(keys.S)){
+        var card = overedCard(cards_on_board);
+        if (card != false){
+            card.scry();
         }
     }
 
