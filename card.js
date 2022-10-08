@@ -1,7 +1,7 @@
 export default class Card extends Phaser.GameObjects.Sprite{
     pointerover = false;
     tapped = false;
-    scrying = false;
+
     constructor(scene, x, y, sprite){
         super(scene, x, y, sprite);
         scene.add.existing(this)
@@ -51,17 +51,10 @@ export default class Card extends Phaser.GameObjects.Sprite{
     }
 
     scry(){
-        if(this.scrying == false){
-            if(this.frame.name == 1){
-                this.card_augmented.setFrame(0);
-            }
-            else{
-                this.card_augmented.setFrame(1);
-            }
-            this.scrying = true;
-        }
-        else{
-            this.card_augmented.setFrame(Number(!this.card_augmented.frame.name));
-        }
+        this.card_augmented.setFrame(Number(!this.frame.name));
+    }
+
+    unscry(){
+        this.card_augmented.setFrame(Number(this.frame.name));
     }
 }

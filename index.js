@@ -14,7 +14,6 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
-var keys;
 
 function preload ()
 {
@@ -77,10 +76,18 @@ function update ()
         }
     }
 
-    if(Phaser.Input.Keyboard.JustDown(keys.S) || Phaser.Input.Keyboard.JustUp(keys.S)){
+    
+    if(Phaser.Input.Keyboard.JustDown(keys.S)){
         var card = overedCard(cards_on_board);
         if (card != false){
             card.scry();
+        }
+    }
+
+    if(Phaser.Input.Keyboard.JustUp(keys.S)){
+        var card = overedCard(cards_on_board);
+        if (card != false){
+            card.unscry();
         }
     }
 
