@@ -1,17 +1,22 @@
-export default class Card extends Phaser.GameObjects.Sprite{
+export default class Card extends Phaser.GameObjects.Image{
     pointerover = false;
     tapped = false;
-    constructor(scene, x, y, sprite){
-        super(scene, x, y, sprite);
+    constructor(scene, x, y, cardfront, cardback){
+        super(scene, x, y, cardfront, cardback);
         scene.add.existing(this)
+
+        this.cardfront = cardfront;
+        this.cardback = cardback;
 
         this.setInteractive();
         this.input.dropZone = true;
 
-        this.card_augmented = scene.add.sprite(1300, 350, sprite);
-        this.card_augmented.setFrame(0);
+        this.card_augmented = scene.add.image(1300, 350, cardfront);
         this.card_augmented.setAlpha(0)
-        this.setScale(0.2);
+        this.setScale(0.23);
+        this.displayHeight = Math.round(this.displayHeight)
+        this.displayWidth = Math.round(this.displayWidth)
+
         scene.input.setDraggable(this);
 
         this.on('drag', function(pointer, dragX, dragY) {
@@ -25,7 +30,7 @@ export default class Card extends Phaser.GameObjects.Sprite{
         });
         
         this.on('pointerout', function () {
-            this.card_augmented.setFrame(Number(this.frame.name)); // Se o rato sair do scry antes de lagar o "S", a vista volta ao normal
+            this.card_augmented.setTexture(this.texture.key); // Se o rato sair do scry antes de lagar o "S", a vista volta ao normal
             this.card_augmented.setAlpha(0);
             this.pointerover = false;
         });
@@ -61,21 +66,26 @@ export default class Card extends Phaser.GameObjects.Sprite{
     }
 
     flip(){
-        if(this.frame.name == 0){
-            this.setFrame(1);
-            this.card_augmented.setFrame(1);
+        if(this.texture.key == this.cardback){
+            this.setTexture(this.cardfront)
+            this.card_augmented.setTexture(this.cardfront);
         }
         else{
-            this.setFrame(0);
-            this.card_augmented.setFrame(0);
+            this.setTexture(this.cardback)
+            this.card_augmented.setTexture(this.cardback);
         }
     }
 
     scry(){
-        this.card_augmented.setFrame(Number(!this.frame.name));
+        if(this.texture.key == this.cardback){
+            this.card_augmented.setTexture(this.cardfront);
+        }
+        else{
+            this.card_augmented.setTexture(this.cardback);
+        }
     }
 
     unscry(){
-        this.card_augmented.setFrame(Number(this.frame.name));
+        this.card_augmented.setTexture(this.texture.key);
     }
 }
