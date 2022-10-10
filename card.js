@@ -3,7 +3,7 @@ export default class Card extends Phaser.GameObjects.Image{
     tapped = false;
     constructor(scene, x, y, cardfront, cardback){
         super(scene, x, y, cardfront, cardback);
-        scene.add.existing(this)
+        scene.add.existing(this);
 
         this.cardfront = cardfront;
         this.cardback = cardback;
@@ -12,10 +12,11 @@ export default class Card extends Phaser.GameObjects.Image{
         this.input.dropZone = true;
 
         this.card_augmented = scene.add.image(1300, 350, cardfront);
-        this.card_augmented.setAlpha(0)
-        this.setScale(0.23);
-        this.displayHeight = Math.round(this.displayHeight)
-        this.displayWidth = Math.round(this.displayWidth)
+        this.card_augmented.setAlpha(0);
+        this.card_augmented.setScale(0.8)
+        this.setScale(0.20);
+        this.displayHeight = Math.round(this.displayHeight);
+        this.displayWidth = Math.round(this.displayWidth);
 
         scene.input.setDraggable(this);
 
