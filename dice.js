@@ -35,6 +35,16 @@ export default class Dice extends Phaser.GameObjects.Sprite{
             this.setSide(Math.floor(Math.random()*6)+1);
             this.setAlpha(1);
         });
+
+        this.on('drag', function(pointer, dragX, dragY) {
+            this.x = dragX;
+            this.y = dragY;
+        });
+        
+        this.on('drop', function (pointer, dropZone) {
+            this.x = dropZone.x;
+            this.y = dropZone.y;
+        });
     }
 
     setSide(num){

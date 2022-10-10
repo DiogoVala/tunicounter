@@ -3,7 +3,6 @@ export default class LifeCounter extends Phaser.GameObjects.Container{
     secondDigit = false;
     loDigit;
     hiDigit;
-    time;
     constructor(scene, x, y){
         super(scene, x, y);
         
@@ -28,13 +27,6 @@ export default class LifeCounter extends Phaser.GameObjects.Container{
             this.pointerover = false;
         });
 
-        this.on('drag', function () {
-            this.loDigit.x=this.x+314*0.1/2;
-            this.loDigit.y=this.y;
-            this.hiDigit.x=this.x-314*0.1/2;
-            this.hiDigit.y=this.y;
-        });
-
         this.on('pointerdown', function(pointer){
             if(this.hiDigit.getBounds().contains(scene.input.x, scene.input.y)){
                 this.decrementLC();
@@ -42,6 +34,15 @@ export default class LifeCounter extends Phaser.GameObjects.Container{
             else if(this.loDigit.getBounds().contains(scene.input.x, scene.input.y)){
                 this.incrementLC();
             }
+        });
+
+        this.on('drag', function (pointer, dragX, dragY) {
+            this.x = dragX;
+            this.y = dragY;
+            this.loDigit.x=this.x+314*0.1/2;
+            this.loDigit.y=this.y;
+            this.hiDigit.x=this.x-314*0.1/2;
+            this.hiDigit.y=this.y;
         });
     }
 

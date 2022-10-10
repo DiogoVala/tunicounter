@@ -23,8 +23,6 @@ function preload ()
     this.load.spritesheet("arc121", "assets/ARC121.png",  { frameWidth: 452, frameHeight: 648 });
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 });
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 });
-    this.gameWidth = this.sys.game.canvas.width
-    this.gameHeight = this.sys.game.canvas.height
 }
 
 var keys, dice, numbers, lifecounter;
@@ -40,6 +38,9 @@ function create ()
     
     cards_on_board.push(new Card(this, 718/2, 420/2, 'arc000'));
     cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'arc121'));
+    cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'arc121'));
+    cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'arc121'));
+    cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'arc121'));
 
     dice = new Dice(this,200,200, 'dice')
 
@@ -53,19 +54,6 @@ function create ()
     var graveZone = this.add.zone(988, 228).setRectangleDropZone(114, 160);
     var banishedZone = this.add.zone(988, 570).setRectangleDropZone(114, 160);
 
-    this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-
-        gameObject.x = dragX;
-        gameObject.y = dragY;
-    });
-
-    this.input.on('drop', function (pointer, gameObject, dropZone) {
-
-        gameObject.x = dropZone.x;
-        gameObject.y = dropZone.y;
-    
-    });
-
     this.input.keyboard.on('keydown', function (event) { 
         keyEvent = event.key;
         newKeyDown = true;
@@ -75,7 +63,6 @@ function create ()
         keyEvent = event.key;
         newKeyUp = true;
     });
-
 }
 
 function update (time)
