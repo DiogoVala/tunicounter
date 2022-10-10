@@ -21,8 +21,8 @@ function preload ()
 {
     this.load.image('bg', 'assets/FABPlayMat.webp');
     this.load.image("cardback", "assets/back.png");
-    this.load.image("arc000", "assets/ARC000.jpg");
-    this.load.image("arc121", "assets/ARC121.jpg",);
+    this.load.image("arc000", "assets/ARC000.png");
+    this.load.image("arc121", "assets/ARC121.png",);
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 });
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 });
