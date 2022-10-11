@@ -33,8 +33,10 @@ var cards_on_board = [];
 var active_card;
 var keyEvent, newKeyDown, newKeyUp;
 
+
 function create ()
 {
+    var clickDuration = 0;
 
     var bg = this.add.image(1280/2-100, 720/2, 'bg');
     bg.setScale(1.5)
@@ -70,6 +72,13 @@ function create ()
 
 function update (time)
 {   
+    if(this.input.activePointer.isDown){
+        this.clickDuration++;
+    }
+    else{
+        this.clickDuration = 0;
+    }
+
     active_card = overedCard(cards_on_board);
     
     if(newKeyDown){

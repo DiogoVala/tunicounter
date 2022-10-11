@@ -21,8 +21,13 @@ export default class Card extends Phaser.GameObjects.Image{
         scene.input.setDraggable(this);
 
         this.on('drag', function(pointer, dragX, dragY) {
-            this.x = dragX;
-            this.y = dragY;
+            if(scene.clickDuration > 20){
+                // Drag da pila toda
+            }
+            else{
+                this.x = dragX;
+                this.y = dragY;
+            }
         });
 
         this.on('pointerover', function () {
