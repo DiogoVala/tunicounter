@@ -68,6 +68,8 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('drop', function (pointer, dropZone) {
+            this.previousZone = this.zoneTag
+            
             if (dropZone.zoneTag != "board"){
                 this.zoneTag = dropZone.zoneTag
                 this.x = dropZone.x
