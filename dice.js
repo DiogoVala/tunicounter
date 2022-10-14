@@ -42,8 +42,10 @@ export default class Dice extends Phaser.GameObjects.Sprite{
         });
         
         this.on('drop', function (pointer, dropZone) {
-            this.x = dropZone.x;
-            this.y = dropZone.y;
+            if(dropZone.zoneTag != "board"){
+                this.x = dropZone.x;
+                this.y = dropZone.y;
+            }
         });
     }
 
