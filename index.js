@@ -76,7 +76,8 @@ function create ()
         if(cardPiles.has(card.previousZone)){
             var list = cardPiles.get(card.previousZone)
             var idx = list.indexOf(card.objectTag)
-            list[idx]="" //Tenho de ver como remover um elemento da lista sem deixar espaço vazio
+            //list[idx]="" //Tenho de ver como remover um elemento da lista sem deixar espaço vazio
+            list.splice(idx,1)
         }
 
         /* Add to new (existing) list */
