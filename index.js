@@ -28,7 +28,7 @@ function preload ()
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 });
 }
 
-var keys, dice, numbers, lifecounter;
+var keys, dice, numbers, lifecounter, cardPiles;
 var cards_on_board = [];
 var active_card;
 var keyEvent, newKeyDown, newKeyUp;
@@ -36,18 +36,31 @@ var keyEvent, newKeyDown, newKeyUp;
 
 function create ()
 {
-    var clickDuration = 0;
+    this.clickDuration = 0;
     var objectTag = 100;
+
+    
 
     var bg = this.add.image(1280/2-100, 720/2, 'bg');
     bg.setScale(1.5)
 
     dice = new Dice(this,200,200, 'dice')
 
-    lifecounter = new LifeCounter(this, 520, 290)
+    lifecounter = new LifeCounter(this, 420, 590)
 
     keys = this.input.keyboard.addKeys('T,F,R,S');
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE');
+
+    //add dummy drop zones
+    var head = new gameZone(this, 92, 230, 114, 160, "head")
+    var chest = new gameZone(this, 92, 400, 114, 160, "chest")
+    var arms = new gameZone(this, 220, 400, 114, 160, "arms")
+    var legs = new gameZone(this, 92, 570, 114, 160, "legs")
+    var weapon1 = new gameZone(this, 410, 400, 114, 160, "weapon1")
+    var hero = new gameZone(this, 538, 400, 114, 160, "hero")
+    var weapon2 = new gameZone(this, 666, 400, 114, 160, "weapon2")
+    var arsenal = new gameZone(this, 538, 570, 114, 160, "arsenal")
+
 
     var deckZone = new gameZone(this, 988, 398, 114, 160, "deck")
     var pitchZone = new gameZone(this, 859, 398, 114, 160, "pitch")
@@ -58,7 +71,7 @@ function create ()
 
     this.children.sendToBack(board)
 
-    var cardPiles = new Map();
+    this.cardPiles = new Map();
 
     this.input.keyboard.on('keydown', function (event) { 
         keyEvent = event.key;
@@ -73,26 +86,26 @@ function create ()
     this.GOD = function(card){
 
         /* Remove from previous list */
-        if(cardPiles.has(card.previousZone)){
-            var list = cardPiles.get(card.previousZone)
+        if(this.cardPiles.has(card.previousZone)){
+            var list = this.cardPiles.get(card.previousZone)
             var idx = list.indexOf(card.objectTag)
             list.splice(idx,1)
             if (list.length === 0){
-                cardPiles.delete(card.previousZone)
+                this.cardPiles.delete(card.previousZone)
             }
         }
 
         /* Add to new (existing) list */
-        if(cardPiles.has(card.zoneTag)){
-            var list = cardPiles.get(card.zoneTag)
+        if(this.cardPiles.has(card.zoneTag)){
+            var list = this.cardPiles.get(card.zoneTag)
             list.push(card.objectTag)
-            cardPiles.set(card.zoneTag, list)
+            this.cardPiles.set(card.zoneTag, list)
         } 
         /* Create a new list */
         else{
-            cardPiles.set(card.zoneTag, [card.objectTag])
+            this.cardPiles.set(card.zoneTag, [card.objectTag])
         }
-        console.log(cardPiles)
+        console.log(this.cardPiles)
     }
 
     //As cartas têm de ser criadas no fim, senão ainda não sabem o que é a função scene.GOD() -.-
