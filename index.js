@@ -1,6 +1,7 @@
 import Card from './card.js';
 import Dice from './dice.js';
 import LifeCounter from './lifecounter.js';
+import gameZone from './gamezone.js';
 
 var config = {
     type: Phaser.AUTO,
@@ -12,7 +13,6 @@ var config = {
         create: create,
         update: update
     },
-    
 };
 
 var game = new Phaser.Game(config);
@@ -37,15 +37,16 @@ var keyEvent, newKeyDown, newKeyUp;
 function create ()
 {
     var clickDuration = 0;
+    var objectTag = 100;
 
     var bg = this.add.image(1280/2-100, 720/2, 'bg');
     bg.setScale(1.5)
     
-    cards_on_board.push(new Card(this, 718/2, 420/2, 'arc000', 'cardback'));
-    cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'arc121','cardback'));
-    cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'arc121','cardback'));
-    cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'arc121','cardback'));
-    cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'arc121','cardback'));
+    cards_on_board.push(new Card(this, 718/2, 420/2, 'arc000', 'cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'arc121','cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'arc121','cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'arc121','cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'arc121','cardback', (++objectTag).toString()));
 
     dice = new Dice(this,200,200, 'dice')
 
@@ -54,10 +55,14 @@ function create ()
     keys = this.input.keyboard.addKeys('T,F,R,S');
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE');
 
-    var deckZone = this.add.zone(988, 398).setRectangleDropZone(114, 160);
-    var pitchZone = this.add.zone(860, 398).setRectangleDropZone(114, 160);
-    var graveZone = this.add.zone(988, 228).setRectangleDropZone(114, 160);
-    var banishedZone = this.add.zone(988, 570).setRectangleDropZone(114, 160);
+    var deckZone = new gameZone(this, 988, 398, 114, 160, "deck")
+    var pitchZone = new gameZone(this, 859, 398, 114, 160, "pitch")
+    var graveZone = new gameZone(this, 988, 228, 114, 160, "grave")
+    var banishedZone = new gameZone(this, 988, 570, 114, 160, "banished")
+    var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2+35, bg.displayWidth, bg.displayHeight, "board")
+    var zones = [deckZone, pitchZone, graveZone, banishedZone, board]
+
+    this.children.sendToBack(board)
 
     this.input.keyboard.on('keydown', function (event) { 
         keyEvent = event.key;
@@ -68,10 +73,14 @@ function create ()
         keyEvent = event.key;
         newKeyUp = true;
     });
+
+    this.God = function(){
+    }
 }
 
 function update (time)
 {   
+    //console.log(this.input.activePointer.x, this.input.activePointer.y)
     if(this.input.activePointer.isDown){
         this.clickDuration++;
     }
@@ -153,3 +162,4 @@ function overedCard(cards){
     
     return return_card;
 }
+
