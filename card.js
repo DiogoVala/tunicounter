@@ -2,6 +2,7 @@ export default class Card extends Phaser.GameObjects.Image{
     pointerover = false
     tapped = false
     zoneTag;
+    previousZone;
     objectTag;
     clickDuration = 0
     constructor(scene, x, y, cardfront, cardback, zoneTag){
@@ -11,7 +12,9 @@ export default class Card extends Phaser.GameObjects.Image{
         this.cardfront = cardfront
         this.cardback = cardback
         this.zoneTag = zoneTag
+        this.previousZone = zoneTag
         this.objectTag = zoneTag
+        scene.GOD(this) // Para criar logo uma entry para esta carta
 
         this.setScale(0.2)
 
@@ -75,6 +78,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.zoneTag = this.objectTag
                 //Chamar o god para criar uma lista nova
             }
+            this.scene.GOD(this)
         })
     }
 

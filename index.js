@@ -41,12 +41,6 @@ function create ()
 
     var bg = this.add.image(1280/2-100, 720/2, 'bg');
     bg.setScale(1.5)
-    
-    cards_on_board.push(new Card(this, 718/2, 420/2, 'arc000', 'cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'arc121','cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'arc121','cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'arc121','cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'arc121','cardback', (++objectTag).toString()));
 
     dice = new Dice(this,200,200, 'dice')
 
@@ -64,6 +58,8 @@ function create ()
 
     this.children.sendToBack(board)
 
+    var cardPiles = new Map();
+
     this.input.keyboard.on('keydown', function (event) { 
         keyEvent = event.key;
         newKeyDown = true;
@@ -74,8 +70,35 @@ function create ()
         newKeyUp = true;
     });
 
-    this.God = function(){
+    this.GOD = function(card){
+
+        /* Remove from previous list */
+        if(cardPiles.has(card.previousZone)){
+            var list = cardPiles.get(card.previousZone)
+            var idx = list.indexOf(card.objectTag)
+            list[idx]="" //Tenho de ver como remover um elemento da lista sem deixar espaço vazio
+        }
+
+        /* Add to new (existing) list */
+        if(cardPiles.has(card.zoneTag)){
+            var list = cardPiles.get(card.zoneTag)
+            list.push(card.objectTag)
+            cardPiles.set(card.zoneTag, list)
+        } 
+        /* Create a new list */
+        else{
+            cardPiles.set(card.zoneTag, [card.objectTag])
+        }
+        console.log(cardPiles)
     }
+
+    //As cartas têm de ser criadas no fim, senão ainda não sabem o que é a função scene.GOD() -.-
+    cards_on_board.push(new Card(this, 718/2, 420/2, 'arc000', 'cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'arc121','cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'arc121','cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'arc121','cardback', (++objectTag).toString()));
+    cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'arc121','cardback', (++objectTag).toString()));
+
 }
 
 function update (time)
