@@ -175,6 +175,10 @@ function update (time)
                 if(dice.pointerover){
                     dice.roll()
                 }
+                else if(active_card != false){
+                    shufflePile(this, active_card.zoneTag)
+                }
+
             case '1':
             case '2':
             case '3':
@@ -238,5 +242,21 @@ function tapPile(scene, active_card){
     for(var card of cardPile){
         scene.cards_on_board[+card].tap()
     }   
+}
+
+function shufflePile(scene, zoneTag){
+    var list = scene.cardPiles.get(zoneTag)
+
+    for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = list[i];
+        list[i] = list[j];
+        list[j] = temp;
+    }
+    for(var card of list){
+        scene.children.bringToTop(scene.cards_on_board[+card])
+    }   
+    console.log(list)
+    scene.cardPiles.set(zoneTag, list)
 }
 
