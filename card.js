@@ -9,6 +9,7 @@ export default class Card extends Phaser.GameObjects.Image{
     draggingPile = false
     constructor(scene, x, y, cardfront, cardback, zoneTag, objectTag){
         super(scene, x, y, cardfront, cardback, zoneTag, objectTag)
+        this.type = "card"
         scene.add.existing(this)
         
         this.cardfront = cardfront

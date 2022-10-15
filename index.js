@@ -90,13 +90,14 @@ function create ()
     })
 
     this.input.on('dragend', function (pointer, gameObject, dropped) {
-        if(!dropped){
-            var cardPile = this.scene.cardPiles.get(gameObject.zoneTag).slice()
-            for(var card of cardPile){
-                this.scene.cards_on_board[+card].x = gameObject.input.dragStartX
-                this.scene.cards_on_board[+card].y = gameObject.input.dragStartY
-            }   
-        }
+        if(gameObject.type == "card")
+            if(!dropped){
+                var cardPile = this.scene.cardPiles.get(gameObject.zoneTag).slice()
+                for(var card of cardPile){
+                    this.scene.cards_on_board[+card].x = gameObject.input.dragStartX
+                    this.scene.cards_on_board[+card].y = gameObject.input.dragStartY
+                }   
+            }
     })
 
     this.GOD = function(card){

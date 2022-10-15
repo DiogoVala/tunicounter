@@ -3,6 +3,7 @@ export default class Dice extends Phaser.GameObjects.Sprite{
     tapped = false;
     constructor(scene, x, y, sprite){
         super(scene, x, y, sprite);
+        this.type = "dice"
 
         scene.add.existing(this)
         this.setInteractive();
