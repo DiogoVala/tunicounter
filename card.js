@@ -126,14 +126,28 @@ export default class Card extends Phaser.GameObjects.Image{
     }
 
     tap(){
-        if (!this.tapped){
-            this.rotation += 3.14/2
-            this.tapped = true
+        const timeline = this.scene.tweens.timeline({
+            onComplete: () => {
+                timeline.destroy()
+            }
+        })
+        if(!this.tapped){
+            timeline.add({
+                targets: this,
+                rotation: 3.14/2,
+                duration: 100
+            })
+            this.tapped=true
         }
         else{
-            this.rotation -= 3.14/2
-            this.tapped = false
+            timeline.add({
+                targets: this,
+                rotation: 0,
+                duration: 100
+            })
+            this.tapped=false
         }
+        timeline.play()
     }
 
     flip(){
