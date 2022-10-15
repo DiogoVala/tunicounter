@@ -1,10 +1,11 @@
 export default class Card extends Phaser.GameObjects.Image{
     pointerover = false
     tapped = false
-    zoneTag;
-    previousZone;
-    objectTag;
+    zoneTag
+    previousZone
+    objectTag
     clickDuration = 0
+    cardPile // To track cards being carried under this
     constructor(scene, x, y, cardfront, cardback, zoneTag){
         super(scene, x, y, cardfront, cardback, zoneTag)
         scene.add.existing(this)
@@ -45,12 +46,16 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('drag', function(pointer, dragX, dragY) {
-            if(this.scene.clickDuration > 20){
-                // Mexer a pile toda
-                this.x = dragX
-                this.y = dragY
+            if(this.scene.clickDuration > 15){
+                this.cardPile = this.scene.cardPiles.get(this.zoneTag)
+                for(var card of this.cardPile){
+                    this.scene.cards_on_board[+card].x = dragX
+                    this.scene.cards_on_board[+card].y = dragY
+                    this.scene.cards_on_board[+card].input.dropZone = false
+                }   
             }
             else{
+                this.cardPile = [this.objectTag]
                 this.scene.clickDuration = 0
                 this.x = dragX
                 this.y = dragY
@@ -86,24 +91,30 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('pointerdown', function () {
-            console.log(this.zoneTag)
+            //console.log(this.scene.cardPiles)
+            //console.log(this.zoneTag)
             this.pile_size_text.setAlpha(0)
         })
 
         this.on('drop', function (pointer, dropZone) {
-            this.previousZone = this.zoneTag
-            
-            if (dropZone.zoneTag != "board"){
-                this.zoneTag = dropZone.zoneTag
-                this.x = dropZone.x
-                this.y = dropZone.y
-                //Chamar o god para mexer a pile toda
+
+            var cardPile = this.cardPile.slice()
+            console.log(cardPile)
+            for(var card of cardPile){
+                if (dropZone.zoneTag != "board"){
+                    //console.log(this.objectTag, cardPile)
+                    this.scene.cards_on_board[+card].x = dropZone.x 
+                    this.scene.cards_on_board[+card].y = dropZone.y
+                    this.scene.cards_on_board[+card].zoneTag = dropZone.zoneTag
+                }
+                else{
+                    this.scene.cards_on_board[+card].zoneTag = cardPile[0].toString()
+                }
+                
+                this.scene.GOD(this.scene.cards_on_board[+card])
+                this.scene.cards_on_board[+card].previousZone = this.scene.cards_on_board[+card].zoneTag
+                this.scene.cards_on_board[+card].input.dropZone = true
             }
-            else{
-                this.zoneTag = this.objectTag
-                //Chamar o god para criar uma lista nova
-            }
-            this.scene.GOD(this)
         })
     }
 
