@@ -35,6 +35,10 @@ export default class Card extends Phaser.GameObjects.Image{
         this.card_augmented.setAlpha(0)
         this.card_augmented.setScale(0.8)
 
+        this.glow = scene.add.image(this.x, this.y, "glow")
+        this.glow.setScale(0.2)
+        this.glow.setAlpha(0)
+
         this.displayHeight = Math.round(this.displayHeight)
         this.displayWidth = Math.round(this.displayWidth)
 
@@ -57,6 +61,7 @@ export default class Card extends Phaser.GameObjects.Image{
         scene.GOD(this)
 
         this.on('dragstart', function () {
+            scene.children.bringToTop(this.glow)
             scene.children.bringToTop(this)
             this.input.dropZone = false
         })
@@ -78,6 +83,9 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.x = dragX
                 this.y = dragY
             }
+
+            this.glow.x = this.x
+            this.glow.y = this.y
         })
 
         this.on('dragend', function () {
@@ -88,13 +96,23 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('pointerover', function () {
             this.card_augmented.setAlpha(1)
+
+            this.glow.x = this.x
+            this.glow.y = this.y
+            this.glow.setAlpha(1)
+
             this.showNumCards()
             this.pointerover = true
+        })
+
+        this.on('pointerup', function(){
+            this.glow.setTint()
         })
         
         this.on('pointerout', function () {
             this.card_augmented.setTexture(this.texture.key) // Se o rato sair do scry antes de lagar o "S", a vista volta ao normal
             this.card_augmented.setAlpha(0)
+            this.glow.setAlpha(0)
 
             this.pile_size_text.setAlpha(0)
             
@@ -114,15 +132,22 @@ export default class Card extends Phaser.GameObjects.Image{
                     this.scene.cards_on_board[+card].x = dropZone.x 
                     this.scene.cards_on_board[+card].y = dropZone.y
                     this.scene.cards_on_board[+card].zoneTag = dropZone.zoneTag
+
+                    this.glow.x = dropZone.x
+                    this.glow.y = dropZone.y 
                 }
                 else{
                     this.scene.cards_on_board[+card].zoneTag = cardPile[0].toString()
+
+                    this.glow.x = this.x
+                    this.glow.y = this.y 
                 }
                 
                 this.scene.GOD(this.scene.cards_on_board[+card])
                 this.scene.cards_on_board[+card].previousZone = this.scene.cards_on_board[+card].zoneTag
                 this.scene.cards_on_board[+card].input.dropZone = true
             }
+            this.glow.setTint()
         })
     }
 
@@ -216,5 +241,9 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.scene.children.bringToTop(this.pile_size_text)
                 this.pile_size_text.setAlpha(1)
             }
+    }
+
+    pile_glow(){
+        this.glow.setTint(0xff00ff, 0xffff00, 0x0000ff, 0xff0000)
     }
 }
