@@ -102,7 +102,9 @@ function create ()
         if(this.cardPiles.has(card.previousZone)){
             var list = this.cardPiles.get(card.previousZone)
             var idx = list.indexOf(card.objectTag)
-            list.splice(idx,1)
+            if(idx >= 0 ){ // Por algum motivo isto estava a ser -1 às vezes e o splice dava merda
+                list.splice(idx,1)
+            }
             if (list.length === 0){
                 this.cardPiles.delete(card.previousZone)
             }
@@ -256,7 +258,7 @@ function shufflePile(scene, zoneTag){
     for(var card of list){
         scene.children.bringToTop(scene.cards_on_board[+card])
     }   
-    console.log(list)
+    scene.cards_on_board[+card].showNumCards() // Só para ficar bonito
     scene.cardPiles.set(zoneTag, list)
 }
 

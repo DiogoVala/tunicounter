@@ -7,15 +7,15 @@ export default class Card extends Phaser.GameObjects.Image{
     clickDuration = 0
     cardPile // To track cards being carried under this
     draggingPile = false
-    constructor(scene, x, y, cardfront, cardback, zoneTag){
-        super(scene, x, y, cardfront, cardback, zoneTag)
+    constructor(scene, x, y, cardfront, cardback, zoneTag, objectTag){
+        super(scene, x, y, cardfront, cardback, zoneTag, objectTag)
         scene.add.existing(this)
-
+        
         this.cardfront = cardfront
         this.cardback = cardback
         this.zoneTag = zoneTag
         this.previousZone = zoneTag
-        this.objectTag = zoneTag
+        this.objectTag = objectTag
 
         this.pile_size_text = scene.add.text(this.x, this.y, 1, { font: "74px Arial Black", fill: "#fff" });
         this.pile_size_text.setStroke("#000",12);
@@ -23,9 +23,6 @@ export default class Card extends Phaser.GameObjects.Image{
         //  Apply the shadow to the Stroke only
         this.pile_size_text.setShadow(2, 2, "#333333", 2, true, false);
         this.pile_size_text.setAlpha(0)
-
-
-        scene.GOD(this) // Para criar logo uma entry para esta carta
 
         this.setScale(0.2)
 
@@ -40,6 +37,22 @@ export default class Card extends Phaser.GameObjects.Image{
         this.displayWidth = Math.round(this.displayWidth)
 
         scene.input.setDraggable(this)
+
+        /* Spawn card in a specific zone */
+        if(this.zoneTag != "board"){
+            for (var zone of scene.zones) {
+                if(zone.zoneTag === this.zoneTag){
+                    this.x = zone.x
+                    this.y = zone.y
+                }
+            }
+        }
+        else{ /* Or spawn at coordinates */
+            this.x = x
+            this.y = y
+        }
+
+        scene.GOD(this)
 
         this.on('dragstart', function () {
             scene.children.bringToTop(this)
@@ -87,8 +100,6 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('pointerdown', function () {
-            //console.log(this.scene.cardPiles)
-            //console.log(this.zoneTag)
             this.pile_size_text.setAlpha(0)
         })
 
@@ -98,7 +109,6 @@ export default class Card extends Phaser.GameObjects.Image{
             console.log(cardPile)
             for(var card of cardPile){
                 if (dropZone.zoneTag != "board"){
-                    //console.log(this.objectTag, cardPile)
                     this.scene.cards_on_board[+card].x = dropZone.x 
                     this.scene.cards_on_board[+card].y = dropZone.y
                     this.scene.cards_on_board[+card].zoneTag = dropZone.zoneTag
