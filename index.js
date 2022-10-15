@@ -1,7 +1,7 @@
-import Card from './card.js';
-import Dice from './dice.js';
-import LifeCounter from './lifecounter.js';
-import gameZone from './gamezone.js';
+import Card from './card.js'
+import Dice from './dice.js'
+import LifeCounter from './lifecounter.js'
+import gameZone from './gamezone.js'
 
 var config = {
     type: Phaser.AUTO,
@@ -13,46 +13,46 @@ var config = {
         create: create,
         update: update
     },
-};
+}
 
-var game = new Phaser.Game(config);
+var game = new Phaser.Game(config)
 
 function preload ()
 {
-    this.load.image("bg", 'assets/FABPlayMat.webp');
-    this.load.image("cardback",     "assets/back.png");
-    this.load.image("ARC000",       "assets/ARC000.png");
-    this.load.image("CRU000-CF",    "assets/CRU000-CF.png");
-    this.load.image("ELE000-CF",    "assets/ELE000-CF.png",);
-    this.load.image("EVR000-CF",    "assets/EVR000-CF.png",);
-    this.load.image("MON000-CF",    "assets/MON000-CF.png",);
-    this.load.image("UPR000",       "assets/UPR000.png",);
-    this.load.image("WTR000-CF",    "assets/WTR000-CF.png",);
+    this.load.image("bg", 'assets/FABPlayMat.webp')
+    this.load.image("cardback",     "assets/back.png")
+    this.load.image("ARC000",       "assets/ARC000.png")
+    this.load.image("CRU000-CF",    "assets/CRU000-CF.png")
+    this.load.image("ELE000-CF",    "assets/ELE000-CF.png",)
+    this.load.image("EVR000-CF",    "assets/EVR000-CF.png",)
+    this.load.image("MON000-CF",    "assets/MON000-CF.png",)
+    this.load.image("UPR000",       "assets/UPR000.png",)
+    this.load.image("WTR000-CF",    "assets/WTR000-CF.png",)
 
-    this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 });
-    this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 });
+    this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 })
+    this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
 }
 
-var keys, dice, numbers, lifecounter, cardPiles;
-var cards_on_board = [];
-var active_card;
-var keyEvent, newKeyDown, newKeyUp;
-var objectTag = 0;
+var keys, dice, numbers, lifecounter, cardPiles
+var cards_on_board = []
+var active_card
+var keyEvent, newKeyDown, newKeyUp
+var objectTag = 0
 
 function create ()
 {
-    this.clickDuration = 0;
-    var objectTag = 0;
+    this.clickDuration = 0
+    var objectTag = 0
 
-    var bg = this.add.image(1280/2-100, 720/2, 'bg');
+    var bg = this.add.image(1280/2-100, 720/2, 'bg')
     bg.setScale(1.5)
 
     dice = new Dice(this,200,200, 'dice')
 
     lifecounter = new LifeCounter(this, 420, 590)
 
-    keys = this.input.keyboard.addKeys('T,F,R,S');
-    numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE');
+    keys = this.input.keyboard.addKeys('T,F,R,S')
+    numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE')
 
     //add dummy drop zones
     var head = new gameZone(this, 92, 228, 114, 160, "head")
@@ -73,18 +73,28 @@ function create ()
 
     this.children.sendToBack(board)
 
-    this.cardPiles = new Map();
-    this.cards_on_board = [];
+    this.cardPiles = new Map()
+    this.cards_on_board = []
 
     this.input.keyboard.on('keydown', function (event) { 
-        keyEvent = event.key;
-        newKeyDown = true;
-    });
+        keyEvent = event.key
+        newKeyDown = true
+    })
 
     this.input.keyboard.on('keyup', function (event) { 
-        keyEvent = event.key;
-        newKeyUp = true;
-    });
+        keyEvent = event.key
+        newKeyUp = true
+    })
+
+    this.input.on('dragend', function (pointer, gameObject, dropped) {
+        if(!dropped){
+            var cardPile = this.scene.cardPiles.get(gameObject.zoneTag).slice()
+            for(var card of cardPile){
+                this.scene.cards_on_board[+card].x = gameObject.input.dragStartX
+                this.scene.cards_on_board[+card].y = gameObject.input.dragStartY
+            }   
+        }
+    })
 
     this.GOD = function(card){
 
@@ -112,48 +122,48 @@ function create ()
     }
 
     //As cartas têm de ser criadas no fim, senão ainda não sabem o que é a função scene.GOD() -.-
-    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'ARC000', 'cardback', (objectTag++).toString()));
-    this.cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'ELE000-CF','cardback', (objectTag++).toString()));
-    this.cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'EVR000-CF','cardback', (objectTag++).toString()));
-    this.cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'MON000-CF','cardback', (objectTag++).toString()));
-    this.cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'UPR000','cardback', (objectTag++).toString()));
-    this.cards_on_board.push(new Card(this, 718/2 + 500, 420/2, 'WTR000-CF','cardback', (objectTag++).toString()));
-    this.cards_on_board.push(new Card(this, 718/2 + 600, 420/2, 'CRU000-CF', 'cardback', (objectTag++).toString()));
+    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'ARC000', 'cardback', (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'ELE000-CF','cardback', (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'EVR000-CF','cardback', (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'MON000-CF','cardback', (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'UPR000','cardback', (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2 + 500, 420/2, 'WTR000-CF','cardback', (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2 + 600, 420/2, 'CRU000-CF', 'cardback', (objectTag++).toString()))
 }
 
 function update (time)
 {   
     //console.log(this.input.activePointer.x, this.input.activePointer.y)
     if(this.input.activePointer.isDown){
-        this.clickDuration++;
+        this.clickDuration++
     }
     else{
-        this.clickDuration = 0;
+        this.clickDuration = 0
     }
 
-    active_card = overedCard(this.cards_on_board);
+    active_card = overedCard(this.cards_on_board)
     
     if(newKeyDown){
         var key = keyEvent.toLowerCase()
         switch (key) {
             case  't':
                 if (active_card != false){
-                    active_card.tap();
+                    active_card.tap()
                 }
-                break;
+                break
             case 'f':
                 if (active_card != false){
-                    active_card.flip();
+                    active_card.flip()
                 }
-            break;
+            break
             case 's':
                 if (active_card != false){
-                    active_card.scry();
+                    active_card.scry()
                 }
-            break;
+            break
             case 'r':
                 if(dice.pointerover){
-                    dice.roll();
+                    dice.roll()
                 }
             case '1':
             case '2':
@@ -169,13 +179,13 @@ function update (time)
             case '9':
             case '0':
                 if(lifecounter.pointerover){
-                    lifecounter.setVal(+key);
+                    lifecounter.setVal(+key)
                 }
-            break;
+            break
             default:
-            break;
+            break
         }
-        newKeyDown=false;
+        newKeyDown=false
     }
 
     if(newKeyUp){
@@ -183,26 +193,26 @@ function update (time)
         switch (key) {
             case 's':
                 if (active_card != false){
-                    active_card.unscry();
+                    active_card.unscry()
                 }
-            break;
+            break
             default:
-            break;
+            break
         }
-        newKeyUp=false;
+        newKeyUp=false
     }
 }
 
 function overedCard(cards){
-    var return_card = false;
-    var card;
+    var return_card = false
+    var card
     for (card of cards){
         if (card.pointerover){
-            return_card = card;
-            break;
+            return_card = card
+            break
         }
     }
     
-    return return_card;
+    return return_card
 }
 
