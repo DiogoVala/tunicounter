@@ -45,6 +45,10 @@ export default class LifeCounter extends Phaser.GameObjects.Container{
             this.notDrag = true
         })
 
+        this.on('dragstart', function(pointer){
+            scene.children.bringToTop(this)
+        })
+
         this.on('drag', function (pointer, dragX, dragY) {
             this.notDrag = false
             this.x = dragX
