@@ -153,7 +153,12 @@ function update (time)
                 break
             case 'f':
                 if (active_card != false){
-                    active_card.flip()
+                    if(active_card.draggingPile){
+                        flipPile(this, active_card)
+                    }
+                    else{
+                        active_card.flip()
+                    }
                 }
             break
             case 's':
@@ -214,5 +219,12 @@ function overedCard(cards){
     }
     
     return return_card
+}
+
+function flipPile(scene, active_card){
+    var cardPile = scene.cardPiles.get(active_card.zoneTag).slice()
+    for(var card of cardPile){
+        scene.cards_on_board[+card].flip()
+    }   
 }
 

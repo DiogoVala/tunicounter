@@ -6,6 +6,7 @@ export default class Card extends Phaser.GameObjects.Image{
     objectTag
     clickDuration = 0
     cardPile // To track cards being carried under this
+    draggingPile = false
     constructor(scene, x, y, cardfront, cardback, zoneTag){
         super(scene, x, y, cardfront, cardback, zoneTag)
         scene.add.existing(this)
@@ -47,6 +48,7 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('drag', function(pointer, dragX, dragY) {
             if(this.scene.clickDuration > 15){
+                this.draggingPile = true
                 this.cardPile = this.scene.cardPiles.get(this.zoneTag)
                 for(var card of this.cardPile){
                     this.scene.cards_on_board[+card].x = dragX
@@ -55,6 +57,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 }   
             }
             else{
+                this.draggingPile = false
                 this.cardPile = [this.objectTag]
                 this.scene.clickDuration = 0
                 this.x = dragX
@@ -63,6 +66,7 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('dragend', function () {
+            this.draggingPile = false
             this.input.dropZone = true
             this.showNumCards()
         })
