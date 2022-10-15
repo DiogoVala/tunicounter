@@ -37,15 +37,16 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('drag', function(pointer, dragX, dragY) {
-            if(this.scene.clickDuration > 20){
-                var cardPile = this.scene.cardPiles.get(this.zoneTag)
-                for(var card of cardPile){
+            if(this.scene.clickDuration > 15){
+                this.cardPile = this.scene.cardPiles.get(this.zoneTag)
+                for(var card of this.cardPile){
                     this.scene.cards_on_board[+card].x = dragX
                     this.scene.cards_on_board[+card].y = dragY
                     this.scene.cards_on_board[+card].input.dropZone = false
                 }   
             }
             else{
+                this.cardPile = [this.objectTag]
                 this.scene.clickDuration = 0
                 this.x = dragX
                 this.y = dragY
@@ -73,14 +74,14 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('drop', function (pointer, dropZone) {
 
-            var cardPile = this.scene.cardPiles.get(this.zoneTag).slice()
+            var cardPile = this.cardPile.slice()
+            console.log(cardPile)
             for(var card of cardPile){
                 if (dropZone.zoneTag != "board"){
-                    console.log(this.objectTag, cardPile)
+                    //console.log(this.objectTag, cardPile)
                     this.scene.cards_on_board[+card].x = dropZone.x 
                     this.scene.cards_on_board[+card].y = dropZone.y
                     this.scene.cards_on_board[+card].zoneTag = dropZone.zoneTag
-                    
                 }
                 else{
                     this.scene.cards_on_board[+card].zoneTag = cardPile[0].toString()
