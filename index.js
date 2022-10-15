@@ -55,20 +55,19 @@ function create ()
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE');
 
     //add dummy drop zones
-    var head = new gameZone(this, 92, 230, 114, 160, "head")
-    var chest = new gameZone(this, 92, 400, 114, 160, "chest")
-    var arms = new gameZone(this, 220, 400, 114, 160, "arms")
-    var legs = new gameZone(this, 92, 570, 114, 160, "legs")
-    var weapon1 = new gameZone(this, 410, 400, 114, 160, "weapon1")
-    var hero = new gameZone(this, 538, 400, 114, 160, "hero")
-    var weapon2 = new gameZone(this, 666, 400, 114, 160, "weapon2")
-    var arsenal = new gameZone(this, 538, 570, 114, 160, "arsenal")
+    var head = new gameZone(this, 92, 228, 114, 160, "head")
+    var chest = new gameZone(this, 92, 398, 114, 160, "chest")
+    var arms = new gameZone(this, 220, 398, 114, 160, "arms")
+    var legs = new gameZone(this, 92, 569, 114, 160, "legs")
+    var weapon1 = new gameZone(this, 410, 398, 114, 160, "weapon1")
+    var hero = new gameZone(this, 539, 398, 114, 160, "hero")
+    var weapon2 = new gameZone(this, 666, 398, 114, 160, "weapon2")
+    var arsenal = new gameZone(this, 539, 569, 114, 160, "arsenal")
 
-
+    var graveZone = new gameZone(this, 988, 228, 114, 160, "grave")
     var deckZone = new gameZone(this, 988, 398, 114, 160, "deck")
     var pitchZone = new gameZone(this, 859, 398, 114, 160, "pitch")
-    var graveZone = new gameZone(this, 988, 228, 114, 160, "grave")
-    var banishedZone = new gameZone(this, 988, 570, 114, 160, "banished")
+    var banishedZone = new gameZone(this, 988, 569, 114, 160, "banished")
     var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2+35, bg.displayWidth, bg.displayHeight, "board")
     var zones = [deckZone, pitchZone, graveZone, banishedZone, board]
 
