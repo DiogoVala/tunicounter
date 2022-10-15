@@ -35,49 +35,47 @@ function preload ()
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
 }
 
-var keys, dice, numbers, lifecounter, cardPiles
-var cards_on_board = []
-var active_card
 var keyEvent, newKeyDown, newKeyUp
-var objectTag = 0
+var keys, numbers
 
 function create ()
 {
-    this.clickDuration = 0
+    /* Private Variables */
     var objectTag = 0
 
-    var bg = this.add.image(1280/2-100, 720/2, 'bg')
-    bg.setScale(1.5)
+    /* Public Variables*/
+    this.clickDuration = 0
+    this.zones = []
+    this.cardPiles = new Map()
+    this.cards_on_board = []
 
-    dice = new Dice(this,200,200, 'dice')
+    var bg = this.add.image(1280/2-100, 720/2, 'bg').setScale(1.5)
 
-    lifecounter = new LifeCounter(this, 420, 590)
+    /* Game objects */
+    this.dice = new Dice(this,200,200, 'dice')
+    this.lifecounter = new LifeCounter(this, 420, 590)
 
+    /* Keyboard inputs */
     keys = this.input.keyboard.addKeys('T,F,R,S')
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE')
 
-    //add dummy drop zones
-    var head = new gameZone(this, 92, 228, 114, 160, "head")
-    var chest = new gameZone(this, 92, 398, 114, 160, "chest")
-    var arms = new gameZone(this, 220, 398, 114, 160, "arms")
-    var legs = new gameZone(this, 92, 569, 114, 160, "legs")
-    var weapon1 = new gameZone(this, 410, 398, 114, 160, "weapon1")
-    var hero = new gameZone(this, 539, 398, 114, 160, "hero")
-    var weapon2 = new gameZone(this, 666, 398, 114, 160, "weapon2")
-    var arsenal = new gameZone(this, 539, 569, 114, 160, "arsenal")
+    /* Game Zones */
+    this.zones.push(new gameZone(this, 92, 228, 114, 160, "head"))
+    this.zones.push(new gameZone(this, 92, 398, 114, 160, "chest"))
+    this.zones.push(new gameZone(this, 220, 398, 114, 160, "arms"))
+    this.zones.push(new gameZone(this, 92, 569, 114, 160, "legs"))
+    this.zones.push(new gameZone(this, 410, 398, 114, 160, "weapon1"))
+    this.zones.push(new gameZone(this, 539, 398, 114, 160, "hero"))
+    this.zones.push(new gameZone(this, 666, 398, 114, 160, "weapon2"))
+    this.zones.push(new gameZone(this, 539, 569, 114, 160, "arsenal"))
+    this.zones.push(new gameZone(this, 988, 228, 114, 160, "grave"))
+    this.zones.push(new gameZone(this, 988, 398, 114, 160, "deck"))
+    this.zones.push(new gameZone(this, 859, 398, 114, 160, "pitch"))
+    this.zones.push(new gameZone(this, 988, 569, 114, 160, "banished"))
 
-    var graveZone = new gameZone(this, 988, 228, 114, 160, "grave")
-    var deckZone = new gameZone(this, 988, 398, 114, 160, "deck")
-    var pitchZone = new gameZone(this, 859, 398, 114, 160, "pitch")
-    var banishedZone = new gameZone(this, 988, 569, 114, 160, "banished")
     var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2+35, bg.displayWidth, bg.displayHeight, "board")
-
-    this.zones = [head, chest, arms, legs, weapon1, hero, weapon2, arsenal, deckZone, pitchZone, graveZone, banishedZone, board]
-
     this.children.sendToBack(board)
-
-    this.cardPiles = new Map()
-    this.cards_on_board = []
+    this.zones.push(board)
 
     this.input.keyboard.on('keydown', function (event) { 
         keyEvent = event.key
@@ -151,7 +149,7 @@ function update (time)
         this.clickDuration = 0
     }
 
-    active_card = overedCard(this.cards_on_board)
+    var active_card = overedCard(this.cards_on_board)
     
     if(newKeyDown){
         var key = keyEvent.toLowerCase()
@@ -183,8 +181,8 @@ function update (time)
                 }
             break
             case 'r':
-                if(dice.pointerover){
-                    dice.roll()
+                if(this.dice.pointerover){
+                    this.dice.roll()
                 }
                 else if(active_card != false){
                     shufflePile(this, active_card.zoneTag)
@@ -196,15 +194,15 @@ function update (time)
             case '4':
             case '5':
             case '6':
-                if(dice.pointerover){
-                    dice.setSide(+key)
+                if(this.dice.pointerover){
+                    this.dice.setSide(+key)
                 }
             case '7':
             case '8':
             case '9':
             case '0':
-                if(lifecounter.pointerover){
-                    lifecounter.setVal(+key)
+                if(this.lifecounter.pointerover){
+                    this.lifecounter.setVal(+key)
                 }
             break
             default:

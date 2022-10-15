@@ -18,11 +18,11 @@ export default class Card extends Phaser.GameObjects.Image{
         this.previousZone = zoneTag
         this.objectTag = objectTag
 
-        this.pile_size_text = scene.add.text(this.x, this.y, 1, { font: "74px Arial Black", fill: "#fff" });
-        this.pile_size_text.setStroke("#000",12);
+        this.pile_size_text = scene.add.text(this.x, this.y, 1, { font: "74px Arial Black", fill: "#fff" })
+        this.pile_size_text.setStroke("#000",12)
 
         //  Apply the shadow to the Stroke only
-        this.pile_size_text.setShadow(2, 2, "#333333", 2, true, false);
+        this.pile_size_text.setShadow(2, 2, "#333333", 2, true, false)
         this.pile_size_text.setAlpha(0)
 
         this.setScale(0.2)
