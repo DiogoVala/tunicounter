@@ -83,7 +83,7 @@ export default class Card extends Phaser.GameObjects.Image{
                     
                 }
                 else{
-                    this.scene.cards_on_board[+card].zoneTag = this.cardPile[0].toString()
+                    this.scene.cards_on_board[+card].zoneTag = cardPile[0].toString()
                 }
                 
                 this.scene.GOD(this.scene.cards_on_board[+card])
