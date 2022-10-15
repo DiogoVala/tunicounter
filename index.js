@@ -174,6 +174,7 @@ function update (time)
                         active_card.flip()
                     }
                 }
+                break;
             break
             case 's':
                 if (active_card != false){
@@ -187,7 +188,7 @@ function update (time)
                 else if(active_card != false){
                     shufflePile(this, active_card.zoneTag)
                 }
-
+                break
             case '1':
             case '2':
             case '3':
