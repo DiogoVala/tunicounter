@@ -88,8 +88,6 @@ export default class Card extends Phaser.GameObjects.Image{
                 
                 this.scene.GOD(this.scene.cards_on_board[+card])
                 this.scene.cards_on_board[+card].previousZone = this.scene.cards_on_board[+card].zoneTag
-            }
-            for(var card of cardPile){
                 this.scene.cards_on_board[+card].input.dropZone = true
             }
         })
