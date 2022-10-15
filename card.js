@@ -64,20 +64,12 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('dragend', function () {
             this.input.dropZone = true
+            this.showNumCards()
         })
 
         this.on('pointerover', function () {
             this.card_augmented.setAlpha(1)
-
-            var pile_size = this.scene.cardPiles.get(this.zoneTag).length
-            if (pile_size > 1){
-                this.pile_size_text.x = this.x-30
-                this.pile_size_text.y = this.y-50
-                this.pile_size_text.setText(pile_size)
-                scene.children.bringToTop(this.pile_size_text)
-                this.pile_size_text.setAlpha(1)
-            }
-            
+            this.showNumCards()
             this.pointerover = true
         })
         
@@ -151,5 +143,16 @@ export default class Card extends Phaser.GameObjects.Image{
 
     unscry(){
         this.card_augmented.setTexture(this.texture.key)
+    }
+
+    showNumCards(){
+        var pile_size = this.scene.cardPiles.get(this.zoneTag).length
+            if (pile_size > 1){
+                this.pile_size_text.x = this.x-30
+                this.pile_size_text.y = this.y-50
+                this.pile_size_text.setText(pile_size)
+                this.scene.children.bringToTop(this.pile_size_text)
+                this.pile_size_text.setAlpha(1)
+            }
     }
 }
