@@ -173,7 +173,7 @@ function update (time)
                         active_card.flip()
                     }
                 }
-                break;
+                break
             break
             case 's':
                 if (active_card != false){
@@ -205,6 +205,16 @@ function update (time)
                     this.lifecounter.setVal(+key)
                 }
             break
+            case '+':
+                if(this.dice.pointerover){
+                    this.dice.increaseSize()
+                }
+                break
+            case '-':
+                if(this.dice.pointerover){
+                    this.dice.decreaseSize()
+                }
+                break
             default:
             break
         }

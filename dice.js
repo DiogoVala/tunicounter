@@ -58,5 +58,10 @@ export default class Dice extends Phaser.GameObjects.Sprite{
         this.setAlpha(0.5)
         this.play('roll')
     }
-
+    increaseSize(){
+        this.setScale(this.scale+0.05)
+    }
+    decreaseSize(){
+        this.setScale(this.scale-0.05)
+    }
 }
