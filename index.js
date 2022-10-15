@@ -38,6 +38,8 @@ function preload ()
 var keyEvent, newKeyDown, newKeyUp
 var keys, numbers
 
+const cardSize = [114, 160]
+
 function create ()
 {
     /* Private Variables */
@@ -49,31 +51,31 @@ function create ()
     this.cardPiles = new Map()
     this.cards_on_board = []
 
-    var bg = this.add.image(1280/2-100, 720/2, 'bg').setScale(1.5)
+    var bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
 
     /* Game objects */
     this.dice = new Dice(this,200,200, 'dice')
     this.lifecounter = new LifeCounter(this, 420, 590)
 
     /* Keyboard inputs */
-    keys = this.input.keyboard.addKeys('T,F,R,S')
+    keys = this.input.keyboard.addKeys('T,F,R,S,NUMPAD_ADD,NUMPAD_SUBTRACT')
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE')
 
     /* Game Zones */
-    this.zones.push(new gameZone(this, 92, 228, 114, 160, "head"))
-    this.zones.push(new gameZone(this, 92, 398, 114, 160, "chest"))
-    this.zones.push(new gameZone(this, 220, 398, 114, 160, "arms"))
-    this.zones.push(new gameZone(this, 92, 569, 114, 160, "legs"))
-    this.zones.push(new gameZone(this, 410, 398, 114, 160, "weapon1"))
-    this.zones.push(new gameZone(this, 539, 398, 114, 160, "hero"))
-    this.zones.push(new gameZone(this, 666, 398, 114, 160, "weapon2"))
-    this.zones.push(new gameZone(this, 539, 569, 114, 160, "arsenal"))
-    this.zones.push(new gameZone(this, 988, 228, 114, 160, "grave"))
-    this.zones.push(new gameZone(this, 988, 398, 114, 160, "deck"))
-    this.zones.push(new gameZone(this, 859, 398, 114, 160, "pitch"))
-    this.zones.push(new gameZone(this, 988, 569, 114, 160, "banished"))
+    this.zones.push(new gameZone(this,  92, 228-35, cardSize[0], cardSize[1], "head"))
+    this.zones.push(new gameZone(this,  92, 398-35, cardSize[0], cardSize[1], "chest"))
+    this.zones.push(new gameZone(this, 220, 398-35, cardSize[0], cardSize[1], "arms"))
+    this.zones.push(new gameZone(this,  92, 569-35, cardSize[0], cardSize[1], "legs"))
+    this.zones.push(new gameZone(this, 410, 398-35, cardSize[0], cardSize[1], "weapon1"))
+    this.zones.push(new gameZone(this, 539, 398-35, cardSize[0], cardSize[1], "hero"))
+    this.zones.push(new gameZone(this, 666, 398-35, cardSize[0], cardSize[1], "weapon2"))
+    this.zones.push(new gameZone(this, 539, 569-35, cardSize[0], cardSize[1], "arsenal"))
+    this.zones.push(new gameZone(this, 988, 228-35, cardSize[0], cardSize[1], "grave"))
+    this.zones.push(new gameZone(this, 988, 398-35, cardSize[0], cardSize[1], "deck"))
+    this.zones.push(new gameZone(this, 859, 398-35, cardSize[0], cardSize[1], "pitch"))
+    this.zones.push(new gameZone(this, 988, 569-35, cardSize[0], cardSize[1], "banished"))
 
-    var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2+35, bg.displayWidth, bg.displayHeight, "board")
+    var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2, bg.displayWidth, bg.displayHeight, "board")
     this.children.sendToBack(board)
     this.zones.push(board)
 
@@ -274,6 +276,7 @@ function shufflePile(scene, zoneTag){
     }
     for(var card of list){
         scene.children.bringToTop(scene.cards_on_board[+card])
+        scene.cards_on_board[+card].pile_size_text.setAlpha(0)
     }   
     scene.cards_on_board[+card].showNumCards() // Só para ficar bonito
     scene.cardPiles.set(zoneTag, list)
