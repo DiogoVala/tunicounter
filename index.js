@@ -28,6 +28,8 @@ function preload ()
     this.load.image("MON000-CF",    "assets/MON000-CF.png",)
     this.load.image("UPR000",       "assets/UPR000.png",)
     this.load.image("WTR000-CF",    "assets/WTR000-CF.png",)
+    this.load.image("UPR182-CF",    "assets/UPR182-CF.png",)
+    this.load.image("WTR150-CF",    "assets/WTR150-CF.png",)
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 })
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
@@ -69,7 +71,8 @@ function create ()
     var pitchZone = new gameZone(this, 859, 398, 114, 160, "pitch")
     var banishedZone = new gameZone(this, 988, 569, 114, 160, "banished")
     var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2+35, bg.displayWidth, bg.displayHeight, "board")
-    var zones = [deckZone, pitchZone, graveZone, banishedZone, board]
+
+    this.zones = [head, chest, arms, legs, weapon1, hero, weapon2, arsenal, deckZone, pitchZone, graveZone, banishedZone, board]
 
     this.children.sendToBack(board)
 
@@ -120,17 +123,21 @@ function create ()
         else{
             this.cardPiles.set(card.zoneTag, [card.objectTag])
         }
-        //console.log(this.cardPiles)
     }
 
-    //As cartas têm de ser criadas no fim, senão ainda não sabem o que é a função scene.GOD() -.-
-    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'ARC000', 'cardback', (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'ELE000-CF','cardback', (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'EVR000-CF','cardback', (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'MON000-CF','cardback', (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'UPR000','cardback', (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2 + 500, 420/2, 'WTR000-CF','cardback', (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2 + 600, 420/2, 'CRU000-CF', 'cardback', (objectTag++).toString()))
+
+    var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
+    for(var card of cardToSpawn){
+        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "deck", (objectTag++).toString()))
+    }
+
+    for(var card of cardToSpawn){
+        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "pitch", (objectTag++).toString()))
+    }
+
+    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'UPR182-CF', 'cardback', "head", (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'WTR150-CF', 'cardback', "chest", (objectTag++).toString()))
+
 }
 
 function update (time)
