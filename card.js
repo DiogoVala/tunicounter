@@ -137,14 +137,46 @@ export default class Card extends Phaser.GameObjects.Image{
     }
 
     flip(){
-        if(this.texture.key == this.cardback){
-            this.setTexture(this.cardfront)
-            this.card_augmented.setTexture(this.cardfront)
-        }
-        else{
-            this.setTexture(this.cardback)
-            this.card_augmented.setTexture(this.cardback)
-        }
+        const timeline = this.scene.tweens.timeline({
+            onComplete: () => {
+                timeline.destroy()
+            }
+        })
+        timeline.add({
+            targets: this,
+            scale: 0.21,
+            duration: 50
+        })
+
+        timeline.add({
+            targets: this,
+            scaleX: 0,
+            duration: 100,
+            delay: 30,
+            onComplete: () => {
+                if(this.texture.key == this.cardback){
+                    this.setTexture(this.cardfront)
+                    this.card_augmented.setTexture(this.cardfront)
+                }
+                else{
+                    this.setTexture(this.cardback)
+                    this.card_augmented.setTexture(this.cardback)
+                }
+            }
+        })
+        timeline.add({
+            targets: this,
+            scaleX: 0.21,
+            duration: 50
+        })
+
+        timeline.add({
+            targets: this,
+            scale: 0.2,
+            duration: 50
+        })
+
+        timeline.play()
     }
 
     scry(){
