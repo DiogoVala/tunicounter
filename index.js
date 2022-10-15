@@ -148,7 +148,12 @@ function update (time)
         switch (key) {
             case  't':
                 if (active_card != false){
-                    active_card.tap()
+                    if(active_card.draggingPile){
+                        tapPile(this, active_card)
+                    }
+                    else{
+                        active_card.tap()
+                    }
                 }
                 break
             case 'f':
@@ -225,6 +230,13 @@ function flipPile(scene, active_card){
     var cardPile = scene.cardPiles.get(active_card.zoneTag).slice()
     for(var card of cardPile){
         scene.cards_on_board[+card].flip()
+    }   
+}
+
+function tapPile(scene, active_card){
+    var cardPile = scene.cardPiles.get(active_card.zoneTag).slice()
+    for(var card of cardPile){
+        scene.cards_on_board[+card].tap()
     }   
 }
 
