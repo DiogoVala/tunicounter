@@ -19,25 +19,28 @@ var game = new Phaser.Game(config);
 
 function preload ()
 {
-    this.load.image('bg', 'assets/FABPlayMat.webp');
-    this.load.image("cardback", "assets/back.png");
-    this.load.image("arc000", "assets/ARC000.png");
-    this.load.image("arc121", "assets/ARC121.png",);
+    this.load.image("bg", 'assets/FABPlayMat.webp');
+    this.load.image("cardback",     "assets/back.png");
+    this.load.image("ARC000",       "assets/ARC000.png");
+    this.load.image("CRU000-CF",    "assets/CRU000-CF.png");
+    this.load.image("ELE000-CF",    "assets/ELE000-CF.png",);
+    this.load.image("EVR000-CF",    "assets/EVR000-CF.png",);
+    this.load.image("MON000-CF",    "assets/MON000-CF.png",);
+    this.load.image("UPR000",       "assets/UPR000.png",);
+    this.load.image("WTR000-CF",    "assets/WTR000-CF.png",);
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 });
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 });
 }
 
 var keys, dice, numbers, lifecounter;
-var cards_on_board = [];
 var active_card;
 var keyEvent, newKeyDown, newKeyUp;
-
+var objectTag = 0;
 
 function create ()
 {
     var clickDuration = 0;
-    var objectTag = 100;
 
     var bg = this.add.image(1280/2-100, 720/2, 'bg');
     bg.setScale(1.5)
@@ -58,7 +61,8 @@ function create ()
 
     this.children.sendToBack(board)
 
-    var cardPiles = new Map();
+    this.cardPiles = new Map();
+    this.cards_on_board = [];
 
     this.input.keyboard.on('keydown', function (event) { 
         keyEvent = event.key;
@@ -73,35 +77,36 @@ function create ()
     this.GOD = function(card){
 
         /* Remove from previous list */
-        if(cardPiles.has(card.previousZone)){
-            var list = cardPiles.get(card.previousZone)
+        if(this.cardPiles.has(card.previousZone)){
+            var list = this.cardPiles.get(card.previousZone)
             var idx = list.indexOf(card.objectTag)
             list.splice(idx,1)
             if (list.length === 0){
-                cardPiles.delete(card.previousZone)
+                this.cardPiles.delete(card.previousZone)
             }
         }
 
         /* Add to new (existing) list */
-        if(cardPiles.has(card.zoneTag)){
-            var list = cardPiles.get(card.zoneTag)
+        if(this.cardPiles.has(card.zoneTag)){
+            var list = this.cardPiles.get(card.zoneTag)
             list.push(card.objectTag)
-            cardPiles.set(card.zoneTag, list)
+            this.cardPiles.set(card.zoneTag, list)
         } 
         /* Create a new list */
         else{
-            cardPiles.set(card.zoneTag, [card.objectTag])
+            this.cardPiles.set(card.zoneTag, [card.objectTag])
         }
-        console.log(cardPiles)
+        //console.log(this.cardPiles)
     }
 
     //As cartas têm de ser criadas no fim, senão ainda não sabem o que é a função scene.GOD() -.-
-    cards_on_board.push(new Card(this, 718/2, 420/2, 'arc000', 'cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'arc121','cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'arc121','cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'arc121','cardback', (++objectTag).toString()));
-    cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'arc121','cardback', (++objectTag).toString()));
-
+    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'ARC000', 'cardback', (objectTag++).toString()));
+    this.cards_on_board.push(new Card(this, 718/2 + 100, 420/2, 'ELE000-CF','cardback', (objectTag++).toString()));
+    this.cards_on_board.push(new Card(this, 718/2 + 200, 420/2, 'EVR000-CF','cardback', (objectTag++).toString()));
+    this.cards_on_board.push(new Card(this, 718/2 + 300, 420/2, 'MON000-CF','cardback', (objectTag++).toString()));
+    this.cards_on_board.push(new Card(this, 718/2 + 400, 420/2, 'UPR000','cardback', (objectTag++).toString()));
+    this.cards_on_board.push(new Card(this, 718/2 + 500, 420/2, 'WTR000-CF','cardback', (objectTag++).toString()));
+    this.cards_on_board.push(new Card(this, 718/2 + 600, 420/2, 'CRU000-CF', 'cardback', (objectTag++).toString()));
 }
 
 function update (time)
@@ -114,7 +119,7 @@ function update (time)
         this.clickDuration = 0;
     }
 
-    active_card = overedCard(cards_on_board);
+    active_card = overedCard(this.cards_on_board);
     
     if(newKeyDown){
         var key = keyEvent.toLowerCase()
