@@ -53,6 +53,7 @@ function create ()
     this.cardPiles = new Map()
     this.cards_on_board = []
 
+    /* Environment objects */
     var bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
 
     /* Game objects */
@@ -60,7 +61,7 @@ function create ()
     this.lifecounter = new LifeCounter(this, 420, 590)
 
     /* Keyboard inputs */
-    keys = this.input.keyboard.addKeys('T,F,R,S,NUMPAD_ADD,NUMPAD_SUBTRACT')
+    keys = this.input.keyboard.addKeys('T,F,R,S,P,NUMPAD_ADD,NUMPAD_SUBTRACT')
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE')
 
     /* Game Zones */
@@ -104,7 +105,7 @@ function create ()
             }
     })
 
-    this.GOD = function(card){
+    this.GOD = function(card, placeOnTop){
 
         /* Remove from previous list */
         if(this.cardPiles.has(card.previousZone)){
@@ -121,13 +122,20 @@ function create ()
         /* Add to new (existing) list */
         if(this.cardPiles.has(card.zoneTag)){
             var list = this.cardPiles.get(card.zoneTag)
-            list.push(card.objectTag)
+            if(placeOnTop){
+                list.push(card.objectTag)
+            }
+            else{
+                list.unshift(card.objectTag)
+            }
             this.cardPiles.set(card.zoneTag, list)
+            console.log(list)
         } 
         /* Create a new list */
         else{
             this.cardPiles.set(card.zoneTag, [card.objectTag])
         }
+        card.previousZone = card.zoneTag
     }
 
 
@@ -193,6 +201,11 @@ function update (time)
                 }
                 else if(active_card != false){
                     shufflePile(this, active_card.zoneTag)
+                }
+                break
+            case 'p':
+                if(active_card != false && active_card.zoneTag === "pitch"){
+                    pitchToDeck(this)
                 }
                 break
             case '1':
@@ -292,5 +305,28 @@ function shufflePile(scene, zoneTag){
     }   
     scene.cards_on_board[+card].showNumCards() // Só para ficar bonito
     scene.cardPiles.set(zoneTag, list)
+}
+
+function pitchToDeck(scene){
+    var cardPile = scene.cardPiles.get("pitch").slice()
+    var zone, card
+    /* Grab zone object */
+    for(zone of scene.zones){
+        if(zone.zoneTag == "deck"){
+            break
+        }
+    }
+    /* Move cards to deck zone */
+    for(var cardIdx of cardPile){
+        card = scene.cards_on_board[+cardIdx]
+        card.moveCardAnimation(card, zone.x, zone.y)
+        card.zoneTag = "deck"
+        scene.GOD(card, false) // Place on bottom
+    }
+    /* Reorder deck visually*/
+    var cardPile = scene.cardPiles.get("deck").slice()
+    for(var cardIdx of cardPile){
+        scene.children.bringToTop(scene.cards_on_board[+cardIdx])
+    }
 }
 

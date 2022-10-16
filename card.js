@@ -63,7 +63,7 @@ export default class Card extends Phaser.GameObjects.Image{
         this.glow.x = this.x
         this.glow.y = this.y
 
-        scene.GOD(this)
+        scene.GOD(this, true)
 
         this.scene.anims.create({
             key: 'waveTint',
@@ -251,5 +251,67 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.scene.children.bringToTop(this.pile_size_text)
                 this.pile_size_text.setAlpha(1)
             }
+    }
+
+    updatePosition(card, x, y){
+        card.x = x
+        card.y = y
+        card.glow.x = x
+        card.glow.y = y
+        card.pile_size_text.x = x
+        card.pile_size_text.y = y
+    }
+
+    moveCardAnimation(card, x, y){
+        const timeline = this.scene.tweens.timeline({
+            onComplete: () => {
+                timeline.destroy()
+            }
+        })
+        timeline.add({
+            targets: [this,this.glow],
+            scale: 0.21,
+            duration: 50
+        })
+
+        timeline.add({
+            targets: [this,this.glow],
+            scaleX: 0,
+            duration: 100,
+            delay: 30,
+            onComplete: () => {
+                if(this.texture.key == this.cardback){
+                    this.setTexture(this.cardfront)
+                    this.card_augmented.setTexture(this.cardfront)
+                }
+                else{
+                    this.setTexture(this.cardback)
+                    this.card_augmented.setTexture(this.cardback)
+                }
+            }
+        })
+        timeline.add({
+            targets: [this,this.glow],
+            scaleX: 0.21,
+            duration: 50
+        })
+
+        timeline.add({
+            targets: [this,this.glow],
+            scale: 0.2,
+            duration: 50
+        })
+
+        timeline.add({
+            targets: [this,this.glow],
+            x: x,
+            y: y,
+            duration: 200,
+            onComplete: () => {
+                this.updatePosition(this, x, y)
+            }
+        })
+
+        timeline.play()
     }
 }
