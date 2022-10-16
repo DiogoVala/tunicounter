@@ -98,6 +98,8 @@ function create ()
                 for(var card of cardPile){
                     this.scene.cards_on_board[+card].x = gameObject.input.dragStartX
                     this.scene.cards_on_board[+card].y = gameObject.input.dragStartY
+                    this.scene.cards_on_board[+card].glow.x = gameObject.input.dragStartX
+                    this.scene.cards_on_board[+card].glow.y = gameObject.input.dragStartY
                 }   
             }
     })
