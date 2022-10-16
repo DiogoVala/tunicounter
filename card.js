@@ -83,6 +83,15 @@ export default class Card extends Phaser.GameObjects.Image{
             repeatDelay: 0
         })
 
+        this.scene.anims.create({
+            key: 'waveSink',
+            frames: this.scene.anims.generateFrameNames('glowSink'),
+            frameRate: 18,
+            yoyo: false,
+            repeat: -1,
+            repeatDelay: 0
+        })
+
         this.on('dragstart', function () {
             scene.children.bringToTop(this.glow)
             scene.children.bringToTop(this)
@@ -152,8 +161,22 @@ export default class Card extends Phaser.GameObjects.Image{
                 else{
                     this.updatePosition(this.scene.cards_on_board[+card], this.x, this.y, cardPile[0].toString())
                 }
-                
-                this.scene.GOD(this.scene.cards_on_board[+card], true)
+            
+                //this.scene.GOD(this.scene.cards_on_board[+card], true)
+                //this.scene.cards_on_board[+card].input.dropZone = true
+                if(this.scene.isBdown){
+                    this.scene.GOD(this.scene.cards_on_board[+card], false)
+
+                    //reorder deck visually
+                    var cardPile = scene.cardPiles.get(this.scene.cards_on_board[+card].zoneTag).slice()
+                    for(var cardIdx of cardPile){
+                        scene.children.bringToTop(scene.cards_on_board[+cardIdx])
+                    }
+                }
+                else{
+                    this.scene.GOD(this.scene.cards_on_board[+card], true)
+                }
+
                 this.scene.cards_on_board[+card].input.dropZone = true
             }
 
