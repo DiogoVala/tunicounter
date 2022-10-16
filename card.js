@@ -94,8 +94,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.draggingPile = true
                 this.cardPile = this.scene.cardPiles.get(this.zoneTag)
                 for(var card of this.cardPile){
-                    this.scene.cards_on_board[+card].x = dragX
-                    this.scene.cards_on_board[+card].y = dragY
+                    this.updatePosition(this.scene.cards_on_board[+card], dragX, dragY)
                     this.scene.cards_on_board[+card].input.dropZone = false
                 }
             }
@@ -103,11 +102,8 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.draggingPile = false
                 this.cardPile = [this.objectTag]
                 this.scene.clickDuration = 0
-                this.x = dragX
-                this.y = dragY
+                this.updatePosition(this, dragX, dragY)
             }
-            this.glow.x = this.x
-            this.glow.y = this.y
         })
 
         this.on('dragend', function () {
@@ -148,26 +144,18 @@ export default class Card extends Phaser.GameObjects.Image{
         this.on('drop', function (pointer, dropZone) {
 
             var cardPile = this.cardPile.slice()
-            console.log(cardPile)
+            //console.log(cardPile)
             for(var card of cardPile){
                 if (dropZone.zoneTag != "board"){
                     this.scene.cards_on_board[+card].zoneTag = dropZone.zoneTag
-
-                    this.scene.cards_on_board[+card].x = dropZone.x 
-                    this.scene.cards_on_board[+card].y = dropZone.y
-                    
-                    this.scene.cards_on_board[+card].glow.x = dropZone.x
-                    this.scene.cards_on_board[+card].glow.y = dropZone.y 
+                    this.updatePosition(this.scene.cards_on_board[+card], dropZone.x, dropZone.y)
                 }
                 else{
                     this.scene.cards_on_board[+card].zoneTag = cardPile[0].toString()
-
-                    this.scene.cards_on_board[+card].glow.x = this.x
-                    this.scene.cards_on_board[+card].glow.y = this.y 
+                    this.updatePosition(this.scene.cards_on_board[+card], this.x, this.y)
                 }
                 
-                this.scene.GOD(this.scene.cards_on_board[+card])
-                this.scene.cards_on_board[+card].previousZone = this.scene.cards_on_board[+card].zoneTag
+                this.scene.GOD(this.scene.cards_on_board[+card], true)
                 this.scene.cards_on_board[+card].input.dropZone = true
             }
         })
