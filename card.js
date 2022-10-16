@@ -159,7 +159,7 @@ export default class Card extends Phaser.GameObjects.Image{
         })
         if(!this.tapped){
             timeline.add({
-                targets: this,
+                targets: [this,this.glow],
                 rotation: 3.14/2,
                 duration: 100
             })
@@ -167,7 +167,7 @@ export default class Card extends Phaser.GameObjects.Image{
         }
         else{
             timeline.add({
-                targets: this,
+                targets: [this,this.glow],
                 rotation: 0,
                 duration: 100
             })
