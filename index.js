@@ -37,6 +37,7 @@ function preload ()
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
     this.load.spritesheet("glow", "assets/glow.png",  { frameWidth: 586, frameHeight: 802 })
     this.load.spritesheet("glowTint", "assets/glowTint.png",  { frameWidth: 586, frameHeight: 802 })
+    this.load.spritesheet("glowSelection", "assets/glowBlue.png",  { frameWidth: 586, frameHeight: 802 })
 }
 
 var keyEvent, newKeyDown, newKeyUp
@@ -54,12 +55,16 @@ function create ()
     this.zones = []
     this.cardPiles = new Map()
     this.cards_on_board = []
+    this.selectedCards = []
     this.drawingBox = false
 
     /* Environment objects */
     var bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
     this.endTurn = new gameObject(this, 859, 470, 'endTurn').setScale(0.5).setInteractive()
     this.selectionBox = new Phaser.GameObjects.Rectangle(this, 0,0,0,0).setStrokeStyle(2, 0x962726, 1)
+
+    this.originX = 0;
+    this.originY = 0;
     this.add.existing(this.selectionBox)
 
     /* Game objects */
@@ -67,7 +72,7 @@ function create ()
     this.lifecounter = new LifeCounter(this, 420, 590)
 
     /* Keyboard inputs */
-    keys = this.input.keyboard.addKeys('T,F,R,S,P,NUMPAD_ADD,NUMPAD_SUBTRACT')
+    keys = this.input.keyboard.addKeys('T,F,R,S,P,G,NUMPAD_ADD,NUMPAD_SUBTRACT')
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE')
 
     /* Game Zones */
@@ -93,7 +98,10 @@ function create ()
             pitchToDeck(this.scene)
         }
         if(currentlyOver[0].zoneTag == "board"){
+            this.scene.selectedCards = []
             this.scene.selectionBox.setPosition(pointer.worldX, pointer.worldY)
+            this.scene.originX = pointer.worldX;
+            this.scene.originY = pointer.worldY;
             this.scene.drawingBox = true
             this.scene.children.bringToTop(this.scene.selectionBox)
         }
@@ -101,11 +109,11 @@ function create ()
 
     this.input.on('pointerup', function(pointer, currentlyOver) {
         
-        var selectedObjects = []
-
         this.scene.drawingBox = false
         for (var card of this.scene.cards_on_board) {
-            var isInside = false
+            card.glow.setAlpha(0)
+            card.glow.stop('waveSelection')
+            card.AnimationPlaying = false
             if(!RectangleContains(this.scene.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
                 continue
             if(!RectangleContains(this.scene.selectionBox, card.x+card.displayWidth/2, card.y-card.displayHeight/2)) //Top right
@@ -114,9 +122,9 @@ function create ()
                 continue
             if(!RectangleContains(this.scene.selectionBox, card.x+card.displayWidth/2, card.y+card.displayHeight/2)) //bot right
                 continue
-            selectedObjects.push(card)
+            this.scene.selectedCards.push(card)
         }
-        console.log(this.scene.selectionBox)
+        console.log(this.scene.selectedCards)
         this.scene.selectionBox.setSize(0, 0)
     })
 
@@ -238,6 +246,15 @@ function update (time)
                     pitchToDeck(this)
                 }
                 break
+            case 'g':
+                var zoneTag = this.selectedCards[0].zoneTag
+                for (var card of this.selectedCards) {
+                    card.updatePosition(card, this.input.activePointer.x, this.input.activePointer.y)
+                    card.zoneTag = zoneTag
+                    this.GOD(card, true)
+                }
+
+                break
             case '1':
             case '2':
             case '3':
@@ -293,31 +310,49 @@ function update (time)
         }
     }
 
-    var originX = 0;
-    var originY = 0;
+    /* Selection box */
     var width = 0;
     var height = 0;
     if(this.drawingBox){
-        originX = this.selectionBox.x;
-        originY = this.selectionBox.y;
-        if(this.selectionBox.x<this.input.activePointer.x){
-            width = this.input.activePointer.x - this.selectionBox.x
-            originX = this.selectionBox.x
-            this.selectionBox.x=this.input.activePointer.x
+        if(this.input.activePointer.x <= this.originX){
+            width = this.originX - this.input.activePointer.x
+            this.selectionBox.x = this.input.activePointer.x
         }
         else{
-            width = this.selectionBox.x - this.input.activePointer.x
+            width = this.input.activePointer.x - this.originX
         }
-        if(this.selectionBox.y<this.input.activePointer.y){
-            width = this.input.activePointer.y - this.selectionBox.y
-            originY = this.selectionBox.y
-            this.selectionBox.y=this.input.activePointer.y
+        if(this.input.activePointer.y <= this.originY){
+            height = this.originY - this.input.activePointer.y
+            this.selectionBox.y = this.input.activePointer.y
         }
         else{
-            width = this.selectionBox.y - this.input.activePointer.y
+            height = this.input.activePointer.y - this.originY
         }
-        console.log(width, height)
+        console.log(this.originX, this.input.activePointer.x)
         this.selectionBox.setSize(width, height)
+
+        for (var card of this.cards_on_board) {
+            var isSelected = true
+            if(!RectangleContains(this.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
+                isSelected = false
+            if(!RectangleContains(this.selectionBox, card.x+card.displayWidth/2, card.y-card.displayHeight/2)) //Top right
+                isSelected = false
+            if(!RectangleContains(this.selectionBox, card.x-card.displayWidth/2, card.y+card.displayHeight/2)) //bot left
+                isSelected = false
+            if(!RectangleContains(this.selectionBox, card.x+card.displayWidth/2, card.y+card.displayHeight/2)) //bot right
+                isSelected = false
+            if(isSelected){
+                if(!card.AnimationPlaying){
+                    card.glow.setAlpha(1)
+                    card.glow.play('waveSelection')
+                    card.AnimationPlaying = true
+                }
+            }
+            else{
+                card.glow.setAlpha(0)
+                card.AnimationPlaying = false
+            }
+        }
     }
 
 }

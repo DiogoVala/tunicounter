@@ -83,6 +83,15 @@ export default class Card extends Phaser.GameObjects.Image{
             repeatDelay: 0
         })
 
+        this.scene.anims.create({
+            key: 'waveSelection',
+            frames: this.scene.anims.generateFrameNames('glowSelection'),
+            frameRate: 18,
+            yoyo: false,
+            repeat: -1,
+            repeatDelay: 0
+        })
+
         this.on('dragstart', function () {
             scene.children.bringToTop(this.glow)
             scene.children.bringToTop(this)
