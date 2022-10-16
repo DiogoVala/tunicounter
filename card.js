@@ -7,11 +7,17 @@ export default class Card extends Phaser.GameObjects.Image{
     clickDuration = 0
     cardPile // To track cards being carried under this
     draggingPile = false
-    constructor(scene, x, y, cardfront, cardback, zoneTag, objectTag){
-        super(scene, x, y, cardfront, cardback, zoneTag, objectTag)
+    AnimationPlaying = false
+    constructor(scene, x, y, cardfront, cardback, glow, zoneTag, objectTag){
+        super(scene, x, y, cardfront, cardback, glow, zoneTag, objectTag)
         this.type = "card"
         scene.add.existing(this)
-        
+
+        this.glow = scene.add.sprite(x, y, glow).setScale(0.2)
+        this.glow.setFrame(1)
+        this.glow.setAlpha(0)
+        scene.children.bringToTop(this)
+
         this.cardfront = cardfront
         this.cardback = cardback
         this.zoneTag = zoneTag
@@ -35,10 +41,6 @@ export default class Card extends Phaser.GameObjects.Image{
         this.card_augmented.setAlpha(0)
         this.card_augmented.setScale(0.8)
 
-        this.glow = scene.add.image(this.x, this.y, "glow")
-        this.glow.setScale(0.2)
-        this.glow.setAlpha(0)
-
         this.displayHeight = Math.round(this.displayHeight)
         this.displayWidth = Math.round(this.displayWidth)
 
@@ -58,10 +60,30 @@ export default class Card extends Phaser.GameObjects.Image{
             this.y = y
         }
 
+        this.glow.x = this.x
+        this.glow.y = this.y
+
         scene.GOD(this)
 
+        this.scene.anims.create({
+            key: 'waveTint',
+            frames: this.scene.anims.generateFrameNames('glowTint'),
+            frameRate: 18,
+            yoyo: false,
+            repeat: -1,
+            repeatDelay: 0
+        })
+
+        this.scene.anims.create({
+            key: 'wave',
+            frames: this.scene.anims.generateFrameNames('glow'),
+            frameRate: 18,
+            yoyo: false,
+            repeat: -1,
+            repeatDelay: 0
+        })
+
         this.on('dragstart', function () {
-            scene.children.bringToTop(this.glow)
             scene.children.bringToTop(this)
             this.input.dropZone = false
         })
@@ -74,7 +96,7 @@ export default class Card extends Phaser.GameObjects.Image{
                     this.scene.cards_on_board[+card].x = dragX
                     this.scene.cards_on_board[+card].y = dragY
                     this.scene.cards_on_board[+card].input.dropZone = false
-                }   
+                }
             }
             else{
                 this.draggingPile = false
@@ -83,7 +105,6 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.x = dragX
                 this.y = dragY
             }
-
             this.glow.x = this.x
             this.glow.y = this.y
         })
@@ -92,21 +113,21 @@ export default class Card extends Phaser.GameObjects.Image{
             this.draggingPile = false
             this.input.dropZone = true
             this.showNumCards()
+            this.AnimationPlaying = false
+            this.glow.stop('waveTint')
+            this.glow.play('wave')
         })
 
         this.on('pointerover', function () {
             this.card_augmented.setAlpha(1)
-
-            this.glow.x = this.x
-            this.glow.y = this.y
             this.glow.setAlpha(1)
-
+            this.glow.play('wave')
             this.showNumCards()
             this.pointerover = true
         })
 
         this.on('pointerup', function(){
-            this.glow.setTint()
+            
         })
         
         this.on('pointerout', function () {
@@ -183,13 +204,13 @@ export default class Card extends Phaser.GameObjects.Image{
             }
         })
         timeline.add({
-            targets: this,
+            targets: [this,this.glow],
             scale: 0.21,
             duration: 50
         })
 
         timeline.add({
-            targets: this,
+            targets: [this,this.glow],
             scaleX: 0,
             duration: 100,
             delay: 30,
@@ -205,13 +226,13 @@ export default class Card extends Phaser.GameObjects.Image{
             }
         })
         timeline.add({
-            targets: this,
+            targets: [this,this.glow],
             scaleX: 0.21,
             duration: 50
         })
 
         timeline.add({
-            targets: this,
+            targets: [this,this.glow],
             scale: 0.2,
             duration: 50
         })
@@ -241,9 +262,5 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.scene.children.bringToTop(this.pile_size_text)
                 this.pile_size_text.setAlpha(1)
             }
-    }
-
-    pile_glow(){
-        this.glow.setTint(0xff00ff, 0xffff00, 0x0000ff, 0xff0000)
     }
 }

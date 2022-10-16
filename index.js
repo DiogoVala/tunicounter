@@ -30,10 +30,11 @@ function preload ()
     this.load.image("WTR000-CF",    "assets/WTR000-CF.png",)
     this.load.image("UPR182-CF",    "assets/UPR182-CF.png",)
     this.load.image("WTR150-CF",    "assets/WTR150-CF.png",)
-    this.load.image("glow",         "assets/glow.png",)
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 })
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
+    this.load.spritesheet("glow", "assets/glow.png",  { frameWidth: 586, frameHeight: 802 })
+    this.load.spritesheet("glowTint", "assets/glowTint.png",  { frameWidth: 586, frameHeight: 802 })
 }
 
 var keyEvent, newKeyDown, newKeyUp
@@ -129,16 +130,17 @@ function create ()
 
 
     var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
+
     for(var card of cardToSpawn){
-        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "deck", (objectTag++).toString()))
+        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "deck", (objectTag++).toString()))
     }
 
     for(var card of cardToSpawn){
-        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "pitch", (objectTag++).toString()))
+        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "pitch", (objectTag++).toString()))
     }
 
-    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'UPR182-CF', 'cardback', "head", (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'WTR150-CF', 'cardback', "chest", (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'UPR182-CF', 'cardback', "glow", "head", (objectTag++).toString()))
+    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'WTR150-CF', 'cardback', "glow", "chest", (objectTag++).toString()))
 
 }
 
@@ -238,12 +240,13 @@ function update (time)
         newKeyUp=false
     }
 
-    if (this.clickDuration > 15){
-        if (active_card != false){
-            active_card.pile_glow()
+    if (active_card != false && this.clickDuration > 15){
+        if(!active_card.AnimationPlaying){
+            active_card.AnimationPlaying = true
+            active_card.glow.stop('wave')
+            active_card.glow.play('waveTint')
         }
     }
-    
 }
 
 function overedCard(cards){
@@ -255,7 +258,6 @@ function overedCard(cards){
             break
         }
     }
-    
     return return_card
 }
 
