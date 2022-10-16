@@ -94,7 +94,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.draggingPile = true
                 this.cardPile = this.scene.cardPiles.get(this.zoneTag)
                 for(var card of this.cardPile){
-                    this.updatePosition(this.scene.cards_on_board[+card], dragX, dragY)
+                    this.updatePosition(this.scene.cards_on_board[+card], dragX, dragY, this.zoneTag)
                     this.scene.cards_on_board[+card].input.dropZone = false
                 }
             }
@@ -102,7 +102,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.draggingPile = false
                 this.cardPile = [this.objectTag]
                 this.scene.clickDuration = 0
-                this.updatePosition(this, dragX, dragY)
+                this.updatePosition(this, dragX, dragY, this.zoneTag)
             }
         })
 
@@ -147,17 +147,17 @@ export default class Card extends Phaser.GameObjects.Image{
             //console.log(cardPile)
             for(var card of cardPile){
                 if (dropZone.zoneTag != "board"){
-                    this.scene.cards_on_board[+card].zoneTag = dropZone.zoneTag
-                    this.updatePosition(this.scene.cards_on_board[+card], dropZone.x, dropZone.y)
+                    this.updatePosition(this.scene.cards_on_board[+card], dropZone.x, dropZone.y, dropZone.zoneTag)
                 }
                 else{
-                    this.scene.cards_on_board[+card].zoneTag = cardPile[0].toString()
-                    this.updatePosition(this.scene.cards_on_board[+card], this.x, this.y)
+                    this.updatePosition(this.scene.cards_on_board[+card], this.x, this.y, cardPile[0].toString())
                 }
                 
                 this.scene.GOD(this.scene.cards_on_board[+card], true)
                 this.scene.cards_on_board[+card].input.dropZone = true
             }
+
+            console.log(this.zoneTag)
         })
     }
 
@@ -253,16 +253,18 @@ export default class Card extends Phaser.GameObjects.Image{
             }
     }
 
-    updatePosition(card, x, y){
+    updatePosition(card, x, y, zoneTag){
         card.x = x
         card.y = y
         card.glow.x = x
         card.glow.y = y
         card.pile_size_text.x = x
         card.pile_size_text.y = y
+        card.zoneTag = zoneTag
     }
 
-    moveCardAnimation(card, x, y){
+    moveCardAnimation(x, y, zoneTag){
+        this.zoneTag = zoneTag
         const timeline = this.scene.tweens.timeline({
             onComplete: () => {
                 timeline.destroy()
@@ -273,7 +275,7 @@ export default class Card extends Phaser.GameObjects.Image{
             scale: 0.21,
             duration: 50
         })
-
+        
         timeline.add({
             targets: [this,this.glow],
             scaleX: 0,
@@ -308,7 +310,7 @@ export default class Card extends Phaser.GameObjects.Image{
             y: y,
             duration: 200,
             onComplete: () => {
-                this.updatePosition(this, x, y)
+                this.updatePosition(this, x, y, zoneTag)
             }
         })
 
