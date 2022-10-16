@@ -150,25 +150,25 @@ export default class Card extends Phaser.GameObjects.Image{
             console.log(cardPile)
             for(var card of cardPile){
                 if (dropZone.zoneTag != "board"){
-                    this.scene.cards_on_board[+card].x = dropZone.x 
-                    this.scene.cards_on_board[+card].y = dropZone.y
                     this.scene.cards_on_board[+card].zoneTag = dropZone.zoneTag
 
-                    this.glow.x = dropZone.x
-                    this.glow.y = dropZone.y 
+                    this.scene.cards_on_board[+card].x = dropZone.x 
+                    this.scene.cards_on_board[+card].y = dropZone.y
+                    
+                    this.scene.cards_on_board[+card].glow.x = dropZone.x
+                    this.scene.cards_on_board[+card].glow.y = dropZone.y 
                 }
                 else{
                     this.scene.cards_on_board[+card].zoneTag = cardPile[0].toString()
 
-                    this.glow.x = this.x
-                    this.glow.y = this.y 
+                    this.scene.cards_on_board[+card].glow.x = this.x
+                    this.scene.cards_on_board[+card].glow.y = this.y 
                 }
                 
                 this.scene.GOD(this.scene.cards_on_board[+card])
                 this.scene.cards_on_board[+card].previousZone = this.scene.cards_on_board[+card].zoneTag
                 this.scene.cards_on_board[+card].input.dropZone = true
             }
-            this.glow.setTint()
         })
     }
 
