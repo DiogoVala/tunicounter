@@ -30,6 +30,7 @@ function preload ()
     this.load.image("WTR000-CF",    "assets/WTR000-CF.png",)
     this.load.image("UPR182-CF",    "assets/UPR182-CF.png",)
     this.load.image("WTR150-CF",    "assets/WTR150-CF.png",)
+    this.load.image("endTurn",    "assets/endTurn.png",)
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 })
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
@@ -55,6 +56,15 @@ function create ()
 
     /* Environment objects */
     var bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
+    this.endTurn = this.add.image(859, 470, 'endTurn').setScale(0.5).setInteractive()
+    this.endTurn.pointover = false
+
+    this.endTurn.on('pointerover', function (pointer) {
+        this.pointover = true
+    });
+    this.endTurn.on('pointerout', function (pointer) {
+        this.pointover = false
+    });
 
     /* Game objects */
     this.dice = new Dice(this,200,200, 'dice')
@@ -81,6 +91,12 @@ function create ()
     var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2, bg.displayWidth, bg.displayHeight, "board")
     this.children.sendToBack(board)
     this.zones.push(board)
+
+    this.input.on('pointerdown', function(pointer) {
+        if(this.scene.endTurn.pointover){
+            pitchToDeck(this.scene)
+        }
+    })
 
     this.input.keyboard.on('keydown', function (event) { 
         keyEvent = event.key
@@ -137,7 +153,6 @@ function create ()
         }
         card.previousZone = card.zoneTag
     }
-
 
     var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
 
@@ -308,8 +323,16 @@ function shufflePile(scene, zoneTag){
 }
 
 function pitchToDeck(scene){
-    var cardPile = scene.cardPiles.get("pitch").slice()
+
     var zone, card
+    var cardPile = scene.cardPiles.get("pitch")
+    if(cardPile){
+        cardPile = cardPile.slice()
+    }
+    else{
+        return
+    }
+
     /* Grab zone object */
     for(zone of scene.zones){
         if(zone.zoneTag == "deck"){
