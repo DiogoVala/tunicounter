@@ -84,6 +84,7 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('dragstart', function () {
+            scene.children.bringToTop(this.glow)
             scene.children.bringToTop(this)
             this.input.dropZone = false
         })
