@@ -157,6 +157,7 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('pointerdown', function () {
             this.pile_size_text.setAlpha(0)
+            console.log(this.zoneTag)
         })
 
         this.on('drop', function (pointer, dropZone) {
@@ -275,7 +276,8 @@ export default class Card extends Phaser.GameObjects.Image{
     }
 
     showNumCards(){
-        var pile_size = this.scene.cardPiles.get(this.zoneTag).length
+        if(this.scene.cardPiles.get(this.zoneTag)){
+            var pile_size = this.scene.cardPiles.get(this.zoneTag).length
             if (pile_size > 1){
                 this.pile_size_text.x = this.x
                 this.pile_size_text.y = this.y
@@ -283,6 +285,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.scene.children.bringToTop(this.pile_size_text)
                 this.pile_size_text.setAlpha(1)
             }
+        }
     }
 
     updatePosition(card, x, y, zoneTag){

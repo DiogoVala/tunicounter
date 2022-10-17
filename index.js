@@ -99,7 +99,8 @@ function create ()
         if(this.scene.endTurn.pointerover){
             pitchToDeck(this.scene)
         }
-        if(currentlyOver[0].zoneTag != "card"){
+        //console.log(currentlyOver)
+        if(currentlyOver[0].type != "card"){
             this.scene.selectedCards = []
             this.scene.selectionBox.setPosition(pointer.worldX, pointer.worldY)
             this.scene.originX = pointer.worldX;
@@ -123,7 +124,7 @@ function create ()
                 continue
             this.scene.selectedCards.push(card)
         }
-        console.log(this.scene.selectedCards)
+        console.log("Selected Cards:", this.scene.selectedCards)
         this.scene.selectionBox.setSize(0, 0)
     })
 
@@ -145,7 +146,6 @@ function create ()
     })
 
     this.GOD = function(card, placeOnTop){
-
         /* Remove from previous list */
         if(this.cardPiles.has(card.previousZone)){
             var list = this.cardPiles.get(card.previousZone)
@@ -261,7 +261,7 @@ function update (time)
                 }
                 break
             case 'g':
-                if(this.selectedCards.length>0){
+                if(this.selectedCards.length > 0){
                     groupSelectedCards(this)
                 }
                 break
@@ -338,7 +338,7 @@ function update (time)
         else{
             height = this.input.activePointer.y - this.originY
         }
-        console.log(this.originX, this.input.activePointer.x)
+        //console.log(this.originX, this.input.activePointer.x)
         this.selectionBox.setSize(width, height)
 
         for (var card of this.cards_on_board) {
@@ -428,7 +428,6 @@ function pitchToDeck(scene){
         }
     }
     /* Move cards to deck zone */
-    console.log(cardPile)
     for(var cardIdx of cardPile){
         card = scene.cards_on_board[+cardIdx]
         card.moveCardAnimation(zone.x, zone.y, zone.zoneTag)
@@ -444,10 +443,11 @@ function pitchToDeck(scene){
 
 function snapCardToBoard(scene, card){
     var cardPile = scene.cardPiles.get(card.zoneTag)
+    console.log("SnapTo",cardPile)
     var cardinPile
     for(var cardIdx of cardPile){
         cardinPile = scene.cards_on_board[+cardIdx]
-        cardinPile.updatePosition(cardinPile, card.input.dragStartX, card.input.dragStartY)
+        cardinPile.updatePosition(cardinPile, card.input.dragStartX, card.input.dragStartY, card.zoneTag)
     }   
 }
 
@@ -471,7 +471,6 @@ function groupSelectedCards(scene){
 
         if(zone.zoneTag != "board"){
             if(ver1 && ver2 && ver3 && ver4){
-                console.log(zone.zoneTag)
                 newX = zone.x
                 newY = zone.y
                 break
@@ -488,8 +487,8 @@ function groupSelectedCards(scene){
         card.glow.stop('waveSelection')
         card.AnimationPlaying = false
         card.moveToPositionAnimation(newX, newY)
-        //card.updatePosition(card, newX, newY)
-        card.zoneTag = zoneTag
+        console.log(zone.zoneTag)
+        card.zoneTag = zone.zoneTag
         scene.GOD(card, true)
     }
     scene.selectedCards = []
