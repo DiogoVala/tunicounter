@@ -364,7 +364,7 @@ export default class Card extends Phaser.GameObjects.Image{
             y: y,
             duration: 200,
             onComplete: () => {
-                this.updatePosition(this, x, y)
+                this.updatePosition(this, x, y, this.zoneTag)
             }
         })
 
