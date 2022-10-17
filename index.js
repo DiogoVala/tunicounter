@@ -111,9 +111,6 @@ function create ()
         
         this.scene.drawingBox = false
         for (var card of this.scene.cards_on_board) {
-            card.glow.setAlpha(0)
-            card.glow.stop('waveSelection')
-            card.AnimationPlaying = false
             if(!RectangleContains(this.scene.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
                 continue
             if(!RectangleContains(this.scene.selectionBox, card.x+card.displayWidth/2, card.y-card.displayHeight/2)) //Top right
@@ -247,13 +244,7 @@ function update (time)
                 }
                 break
             case 'g':
-                var zoneTag = this.selectedCards[0].zoneTag
-                for (var card of this.selectedCards) {
-                    card.updatePosition(card, this.input.activePointer.x, this.input.activePointer.y)
-                    card.zoneTag = zoneTag
-                    this.GOD(card, true)
-                }
-
+                groupSelectedCards(this)
                 break
             case '1':
             case '2':
@@ -449,3 +440,37 @@ function RectangleContains(rect, x, y)
     }
     return (rect.x <= x && rect.x + rect.width >= x && rect.y <= y && rect.y + rect.height >= y);
 };
+
+function groupSelectedCards(scene){
+    var zoneTag = scene.selectedCards[0].zoneTag
+    var newX, newY;
+    for (var zone of scene.zones) {
+        var ver1 = (zone.border.x-zone.border.width/2 <= scene.input.activePointer.x)
+        var ver2 = (zone.border.x+zone.border.width/2 >= scene.input.activePointer.x)
+        var ver3 = (zone.border.y-zone.border.height/2 <= scene.input.activePointer.y)
+        var ver4 = (zone.border.y+zone.border.height/2 >= scene.input.activePointer.y)
+
+        if(zone.zoneTag != "board"){
+            if(ver1 && ver2 && ver3 && ver4){
+                console.log(zone.zoneTag)
+                newX = zone.x
+                newY = zone.y
+                break
+            }
+            else{
+                newX = scene.input.activePointer.x
+                newY = scene.input.activePointer.y
+            }
+        }
+    }
+
+    for (var card of scene.selectedCards) {
+        card.glow.setAlpha(0)
+        card.glow.stop('waveSelection')
+        card.AnimationPlaying = false
+        card.moveToPositionAnimation(newX, newY)
+        //card.updatePosition(card, newX, newY)
+        card.zoneTag = zoneTag
+        scene.GOD(card, true)
+    }
+}
