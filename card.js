@@ -109,12 +109,23 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('drag', function(pointer, dragX, dragY) {
             if(this.scene.clickDuration > 15){
-                this.draggingPile = true
-                this.cardPile = this.scene.cardPiles.get(this.zoneTag)
-                for(var card of this.cardPile){
-                    this.updatePosition(this.scene.cards_on_board[+card], dragX, dragY, this.zoneTag)
-                    this.scene.cards_on_board[+card].input.dropZone = false
+                //get x,y position of pile (last card of pile always works)
+                var aux_card = this.scene.cards_on_board[+this.scene.cardPiles.get(this.zoneTag)[0]]
+                //to move pile, drag position should be almost very little
+                if(dragX<(aux_card.x+20) && dragX>=(aux_card.x-20) && dragY<(aux_card.y+20) && dragY>=(aux_card.y-20)){
+                    this.draggingPile = true
+                    this.cardPile = this.scene.cardPiles.get(this.zoneTag)
+                    for(var card of this.cardPile){
+                        this.updatePosition(this.scene.cards_on_board[+card], dragX, dragY, this.zoneTag)
+                        this.scene.cards_on_board[+card].input.dropZone = false
+                    }
                 }
+                else{
+                    this.draggingPile = false
+                    this.cardPile = [this.objectTag]
+                    this.scene.clickDuration = 0
+                    this.updatePosition(this, dragX, dragY, this.zoneTag)
+                } 
             }
             else{
                 this.draggingPile = false
@@ -171,9 +182,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 else{
                     this.updatePosition(this.scene.cards_on_board[+card], this.x, this.y, cardPile[0].toString())
                 }
-            
-                //this.scene.GOD(this.scene.cards_on_board[+card], true)
-                //this.scene.cards_on_board[+card].input.dropZone = true
+
                 if(this.scene.isBdown){
                     this.scene.GOD(this.scene.cards_on_board[+card], false)
 
