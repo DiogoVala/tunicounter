@@ -38,6 +38,7 @@ function preload ()
     this.load.spritesheet("glow", "assets/glow.png",  { frameWidth: 586, frameHeight: 802 })
     this.load.spritesheet("glowTint", "assets/glowTint.png",  { frameWidth: 586, frameHeight: 802 })
     this.load.spritesheet("glowSelection", "assets/glowBlue.png",  { frameWidth: 586, frameHeight: 802 })
+    this.load.spritesheet("glowSink", "assets/glowSink.png",  { frameWidth: 586, frameHeight: 802 })
 }
 
 var keyEvent, newKeyDown, newKeyUp
@@ -57,6 +58,7 @@ function create ()
     this.cards_on_board = []
     this.selectedCards = []
     this.drawingBox = false
+    this.isBdown = false;
 
     /* Environment objects */
     var bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
@@ -72,7 +74,7 @@ function create ()
     this.lifecounter = new LifeCounter(this, 420, 590)
 
     /* Keyboard inputs */
-    keys = this.input.keyboard.addKeys('T,F,R,S,P,G,NUMPAD_ADD,NUMPAD_SUBTRACT')
+    keys = this.input.keyboard.addKeys('T,F,R,S,P,G,B,NUMPAD_ADD,NUMPAD_SUBTRACT')
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE')
 
     /* Game Zones */
@@ -201,6 +203,21 @@ function update (time)
 
     var active_card = overedCard(this.cards_on_board)
     
+    if(keys.B.isDown){
+        this.isBdown = true
+    }
+    else{
+        this.isBdown = false
+    }
+
+    if (this.isBdown){
+        if(active_card != false){
+            active_card.glow.stop('wave')
+            active_card.glow.play('waveSink')
+        }
+    }
+
+
     if(newKeyDown){
         var key = keyEvent.toLowerCase()
         switch (key) {
@@ -412,8 +429,8 @@ function pitchToDeck(scene){
     console.log(cardPile)
     for(var cardIdx of cardPile){
         card = scene.cards_on_board[+cardIdx]
-        card.moveCardAnimation(card, zone.x, zone.y)
-        card.zoneTag = "deck"
+        card.moveCardAnimation(zone.x, zone.y, zone.zoneTag)
+        card.zoneTag = zone.zoneTag
         scene.GOD(card, false) // Place on bottom
     }
     /* Reorder deck visually*/
