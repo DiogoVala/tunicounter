@@ -99,7 +99,7 @@ function create ()
         if(this.scene.endTurn.pointerover){
             pitchToDeck(this.scene)
         }
-        if(currentlyOver[0].zoneTag == "board"){
+        if(currentlyOver[0].zoneTag != "card"){
             this.scene.selectedCards = []
             this.scene.selectionBox.setPosition(pointer.worldX, pointer.worldY)
             this.scene.originX = pointer.worldX;
@@ -261,7 +261,9 @@ function update (time)
                 }
                 break
             case 'g':
-                groupSelectedCards(this)
+                if(this.selectedCards.length>0){
+                    groupSelectedCards(this)
+                }
                 break
             case '1':
             case '2':
@@ -490,4 +492,5 @@ function groupSelectedCards(scene){
         card.zoneTag = zoneTag
         scene.GOD(card, true)
     }
+    scene.selectedCards = []
 }
