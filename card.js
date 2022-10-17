@@ -84,6 +84,15 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.scene.anims.create({
+            key: 'waveSelection',
+            frames: this.scene.anims.generateFrameNames('glowSelection'),
+            frameRate: 18,
+            yoyo: false,
+            repeat: -1,
+            repeatDelay: 0
+        })
+        
+        this.scene.anims.create({
             key: 'waveSink',
             frames: this.scene.anims.generateFrameNames('glowSink'),
             frameRate: 18,
@@ -334,6 +343,25 @@ export default class Card extends Phaser.GameObjects.Image{
             duration: 200,
             onComplete: () => {
                 this.updatePosition(this, x, y, zoneTag)
+            }
+        })
+
+        timeline.play()
+    }
+
+    moveToPositionAnimation(x, y){
+        const timeline = this.scene.tweens.timeline({
+            onComplete: () => {
+                timeline.destroy()
+            }
+        })
+        timeline.add({
+            targets: [this,this.glow],
+            x: x,
+            y: y,
+            duration: 200,
+            onComplete: () => {
+                this.updatePosition(this, x, y)
             }
         })
 
