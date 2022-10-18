@@ -576,5 +576,5 @@ function spreadPile(scene, selectedCards){
     }
     scene.selectedCards = []
     scene.selectionBox.setSize(0,0)
-    scene.drawingBox = true
+    scene.drawingBox = false
 }
