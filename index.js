@@ -224,14 +224,7 @@ function update (time)
     else{
         this.isBdown = false
     }
-
-    if (this.isBdown){
-        if(active_card != false){
-            active_card.glow.stop('wave')
-            active_card.glow.play('waveSink')
-        }
-    }
-
+    
 
     if(newKeyDown){
         var key = keyEvent.toLowerCase()
@@ -294,6 +287,12 @@ function update (time)
                 if(this.selectedCards.length > 0){
                     spreadPile(this, this.selectedCards)
                 }
+                break
+            case 'b':
+                if (active_card != false){
+                    active_card.glow.stop('wave')
+                    active_card.glow.play('waveSink')
+                }
             case '1':
             case '2':
             case '3':
@@ -334,7 +333,12 @@ function update (time)
                 if (active_card != false){
                     active_card.unscry()
                 }
-            break
+                break
+            case 'b':
+                if (active_card != false){
+                    active_card.glow.stop('waveSink')
+                    active_card.glow.play('wave')
+                }
             default:
             break
         }
