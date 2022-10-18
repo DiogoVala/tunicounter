@@ -2,7 +2,7 @@ import animations from './animations.js'
 
 export default class Card extends Phaser.GameObjects.Image{
     pointerover = false
-    tapped = false
+    tap_angle = 0
     zoneTag
     previousZone
     objectTag
@@ -206,28 +206,12 @@ export default class Card extends Phaser.GameObjects.Image{
     }
 
     tap(){
-        const timeline = this.scene.tweens.timeline({
-            onComplete: () => {
-                timeline.destroy()
-            }
-        })
-        if(!this.tapped){
-            timeline.add({
-                targets: [this,this.glow],
-                rotation: 3.14/2,
-                duration: 100
-            })
-            this.tapped=true
+        this.tap_angle += 3.14/2
+        
+        if (this.tap_angle == 6.28){
+            this.tap_angle=0
         }
-        else{
-            timeline.add({
-                targets: [this,this.glow],
-                rotation: 0,
-                duration: 100
-            })
-            this.tapped=false
-        }
-        timeline.play()
+
     }
 
     flip(){

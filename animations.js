@@ -141,3 +141,21 @@ animations.flipCard = function (scene, card){
 
     timeline.play()
 }
+
+animations.tapCard = function (scene, card){
+    card.tap()
+    const timeline = scene.tweens.timeline({
+        onComplete: () => {
+            timeline.destroy()
+        }
+    })
+
+    timeline.add({
+        targets: [card, card.glow],
+        rotation: card.tap_angle,
+        duration: 100
+    })
+    
+
+    timeline.play()
+}

@@ -239,7 +239,7 @@ function update (time)
             case  't':
                 if(this.selectedCards.length > 0){
                     for(var card of this.selectedCards){
-                        card.tap()
+                        animations.tapCard(this, card)
                     }
                 }
                 else if (active_card != false){
@@ -247,7 +247,7 @@ function update (time)
                         tapPile(this, active_card)
                     }
                     else{
-                        active_card.tap()
+                        animations.tapCard(this, active_card)
                     }
                 }
                 break
