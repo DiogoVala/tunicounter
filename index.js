@@ -44,7 +44,9 @@ function preload ()
 var keyEvent, newKeyDown, newKeyUp
 var keys, numbers
 
-const cardSize = [114, 160]
+
+const cardZoneSize = [114, 160]
+const cardSize = [109, 152]
 
 function create ()
 {
@@ -61,12 +63,13 @@ function create ()
     this.isBdown = false;
 
     /* Environment objects */
-    var bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
+    this.bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
     this.endTurn = new gameObject(this, 859, 470, 'endTurn').setScale(0.5).setInteractive()
     this.selectionBox = new Phaser.GameObjects.Rectangle(this, 0,0,0,0).setStrokeStyle(2, 0x962726, 1)
+    this.bounds = [this.bg.x+this.bg.displayWidth, this.bg.y+this.bg.displayHeight]
 
-    this.originX = 0;
-    this.originY = 0;
+    this.selectionBoxOriginX = 0;
+    this.selectionBoxOriginY = 0;
     this.add.existing(this.selectionBox)
 
     /* Game objects */
@@ -74,24 +77,24 @@ function create ()
     this.lifecounter = new LifeCounter(this, 420, 590)
 
     /* Keyboard inputs */
-    keys = this.input.keyboard.addKeys('T,F,R,S,P,G,B,NUMPAD_ADD,NUMPAD_SUBTRACT')
+    keys = this.input.keyboard.addKeys('T,F,R,S,P,G,B,D,NUMPAD_ADD,NUMPAD_SUBTRACT')
     numbers = this.input.keyboard.addKeys('ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE')
 
     /* Game Zones */
-    this.zones.push(new gameZone(this,  92, 228-35, cardSize[0], cardSize[1], "head"))
-    this.zones.push(new gameZone(this,  92, 398-35, cardSize[0], cardSize[1], "chest"))
-    this.zones.push(new gameZone(this, 220, 398-35, cardSize[0], cardSize[1], "arms"))
-    this.zones.push(new gameZone(this,  92, 569-35, cardSize[0], cardSize[1], "legs"))
-    this.zones.push(new gameZone(this, 410, 398-35, cardSize[0], cardSize[1], "weapon1"))
-    this.zones.push(new gameZone(this, 539, 398-35, cardSize[0], cardSize[1], "hero"))
-    this.zones.push(new gameZone(this, 666, 398-35, cardSize[0], cardSize[1], "weapon2"))
-    this.zones.push(new gameZone(this, 539, 569-35, cardSize[0], cardSize[1], "arsenal"))
-    this.zones.push(new gameZone(this, 988, 228-35, cardSize[0], cardSize[1], "grave"))
-    this.zones.push(new gameZone(this, 988, 398-35, cardSize[0], cardSize[1], "deck"))
-    this.zones.push(new gameZone(this, 859, 398-35, cardSize[0], cardSize[1], "pitch"))
-    this.zones.push(new gameZone(this, 988, 569-35, cardSize[0], cardSize[1], "banished"))
+    this.zones.push(new gameZone(this,  92, 228-35, cardZoneSize[0], cardZoneSize[1], "head"))
+    this.zones.push(new gameZone(this,  92, 398-35, cardZoneSize[0], cardZoneSize[1], "chest"))
+    this.zones.push(new gameZone(this, 220, 398-35, cardZoneSize[0], cardZoneSize[1], "arms"))
+    this.zones.push(new gameZone(this,  92, 569-35, cardZoneSize[0], cardZoneSize[1], "legs"))
+    this.zones.push(new gameZone(this, 410, 398-35, cardZoneSize[0], cardZoneSize[1], "weapon1"))
+    this.zones.push(new gameZone(this, 539, 398-35, cardZoneSize[0], cardZoneSize[1], "hero"))
+    this.zones.push(new gameZone(this, 666, 398-35, cardZoneSize[0], cardZoneSize[1], "weapon2"))
+    this.zones.push(new gameZone(this, 539, 569-35, cardZoneSize[0], cardZoneSize[1], "arsenal"))
+    this.zones.push(new gameZone(this, 988, 228-35, cardZoneSize[0], cardZoneSize[1], "grave"))
+    this.zones.push(new gameZone(this, 988, 398-35, cardZoneSize[0], cardZoneSize[1], "deck"))
+    this.zones.push(new gameZone(this, 859, 398-35, cardZoneSize[0], cardZoneSize[1], "pitch"))
+    this.zones.push(new gameZone(this, 988, 569-35, cardZoneSize[0], cardZoneSize[1], "banished"))
 
-    var board = new gameZone(this, bg.displayWidth/2, bg.displayHeight/2, bg.displayWidth, bg.displayHeight, "board")
+    var board = new gameZone(this, this.bg.displayWidth/2, this.bg.displayHeight/2, this.bg.displayWidth, this.bg.displayHeight, "board")
     this.children.sendToBack(board)
     this.zones.push(board)
 
@@ -99,19 +102,27 @@ function create ()
         if(this.scene.endTurn.pointerover){
             pitchToDeck(this.scene)
         }
-        //console.log(currentlyOver)
-        if(currentlyOver[0].type != "card"){
-            this.scene.selectedCards = []
+        
+        /* Selection box*/
+        this.scene.selectedCards = []
+        this.scene.selectionBox.setSize(0,0)
+        var onTopOf = ""
+        try{ 
+            onTopOf = currentlyOver[0].type
+        }
+        catch{}
+        if(onTopOf != "card" && onTopOf != "dice" && onTopOf != "lifecounter" && onTopOf != "object" && onTopOf != ""){
             this.scene.selectionBox.setPosition(pointer.worldX, pointer.worldY)
-            this.scene.originX = pointer.worldX;
-            this.scene.originY = pointer.worldY;
+            this.scene.selectionBoxOriginX = pointer.worldX;
+            this.scene.selectionBoxOriginY = pointer.worldY;    
             this.scene.drawingBox = true
             this.scene.children.bringToTop(this.scene.selectionBox)
         }
+        
+        
     })
 
     this.input.on('pointerup', function(pointer, currentlyOver) {
-        
         this.scene.drawingBox = false
         for (var card of this.scene.cards_on_board) {
             if(!RectangleContains(this.scene.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
@@ -178,9 +189,12 @@ function create ()
 
     var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
 
-    for(var card of cardToSpawn){
-        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "deck", (objectTag++).toString()))
+    for (let index = 0; index < 12; index++) {
+        for(var card of cardToSpawn){
+            this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "deck", (objectTag++).toString()))
+        }
     }
+
 
     for(var card of cardToSpawn){
         this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "pitch", (objectTag++).toString()))
@@ -275,6 +289,10 @@ function update (time)
                     groupSelectedCards(this)
                 }
                 break
+            case 'd':
+                if(this.selectedCards.length > 0){
+                    spreadPile(this, this.selectedCards)
+                }
             case '1':
             case '2':
             case '3':
@@ -334,19 +352,19 @@ function update (time)
     var width = 0;
     var height = 0;
     if(this.drawingBox){
-        if(this.input.activePointer.x <= this.originX){
-            width = this.originX - this.input.activePointer.x
+        if(this.input.activePointer.x <= this.selectionBoxOriginX){
+            width = this.selectionBoxOriginX - this.input.activePointer.x
             this.selectionBox.x = this.input.activePointer.x
         }
         else{
-            width = this.input.activePointer.x - this.originX
+            width = this.input.activePointer.x - this.selectionBoxOriginX
         }
-        if(this.input.activePointer.y <= this.originY){
-            height = this.originY - this.input.activePointer.y
+        if(this.input.activePointer.y <= this.selectionBoxOriginY){
+            height = this.selectionBoxOriginY - this.input.activePointer.y
             this.selectionBox.y = this.input.activePointer.y
         }
         else{
-            height = this.input.activePointer.y - this.originY
+            height = this.input.activePointer.y - this.selectionBoxOriginY
         }
         //console.log(this.originX, this.input.activePointer.x)
         this.selectionBox.setSize(width, height)
@@ -487,8 +505,26 @@ function groupSelectedCards(scene){
                 break
             }
             else{
-                newX = scene.input.activePointer.x
-                newY = scene.input.activePointer.y
+                /* Por algum motivo o bounds aqui não corresponde ao tamanho do campo */
+                if(scene.input.activePointer.x-cardSize[0]/2 < 0){
+                    newX = cardSize[0]/2+20
+                }
+                else if(scene.input.activePointer.x+cardSize[0]/2 > scene.bounds[0]) {
+                    console.log("this")
+                    newX = scene.bounds[0]-20
+                }
+                else{
+                    newX = scene.input.activePointer.x
+                }
+                if(scene.input.activePointer.y-cardSize[1]/2 < 0){
+                    newY = cardSize[1]/2+20
+                }
+                else if(scene.input.activePointer.y+cardSize[1]/2 > scene.bounds[1]){
+                    newY = scene.bounds[1]-20
+                }
+                else{
+                    newY = scene.input.activePointer.y
+                }
             }
         }
     }
@@ -498,9 +534,47 @@ function groupSelectedCards(scene){
         card.glow.stop('waveSelection')
         card.AnimationPlaying = false
         card.moveToPositionAnimation(newX, newY)
-        console.log(zone.zoneTag)
         card.zoneTag = zone.zoneTag
         scene.GOD(card, true)
     }
     scene.selectedCards = []
+}
+
+function spreadPile(scene, selectedCards){
+    var originX = scene.input.activePointer.x
+    var originY = scene.input.activePointer.y
+    var offsetX = 0
+    var offsetY = 0
+
+    /* Check if too close to bounds */
+
+    if(originX-cardSize[0]/2 < 0){
+        originX = cardSize[0]/2+20
+    }
+    else if(originX+cardSize[0]/2 > scene.bounds[0]) {
+        originX = scene.bounds[0]-20
+    }
+    if(originY-cardSize[1]/2 < 0){
+        originY = cardSize[1]/2+20
+    }
+    else if(originY+cardSize[0]/2 > scene.bounds[1]){
+        originY = scene.bounds[1]-20
+    }
+
+    for(var card of selectedCards){
+
+        card.updatePosition(originX+offsetX, originY+offsetY, card.zoneTag)
+        card.zoneTag=card.objectTag
+        scene.GOD(card, true)
+        offsetX+=0.33*card.displayWidth
+        if(originX+offsetX+card.displayWidth/2 > scene.bg.displayWidth){
+            offsetX = 0
+            offsetY += 0.66*card.displayHeight
+        }
+
+        scene.children.bringToTop(scene.cards_on_board[+card])
+    }
+    scene.selectedCards = []
+    scene.selectionBox.setSize(0,0)
+    scene.drawingBox = true
 }
