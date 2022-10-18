@@ -222,7 +222,12 @@ function update (time)
         var key = keyEvent.toLowerCase()
         switch (key) {
             case  't':
-                if (active_card != false){
+                if(this.selectedCards.length > 0){
+                    for(var card of this.selectedCards){
+                        card.tap()
+                    }
+                }
+                else if (active_card != false){
                     if(active_card.draggingPile){
                         tapPile(this, active_card)
                     }
@@ -232,7 +237,12 @@ function update (time)
                 }
                 break
             case 'f':
-                if (active_card != false){
+                if(this.selectedCards.length > 0){
+                    for(var card of this.selectedCards){
+                        card.flip()
+                    }
+                }
+                else if(active_card != false){
                     if(active_card.draggingPile){
                         flipPile(this, active_card)
                     }
