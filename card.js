@@ -150,7 +150,7 @@ export default class Card extends Phaser.GameObjects.Image{
             this.glow.setAlpha(1)
             this.glow.play('wave')
             this.showNumCards()
-            animations.enlargeCardOnHover(this.scene, [this, this.glow])
+            animations.enlargeOnHover(this.scene, [this, this.glow])
             this.pointerover = true
         })
 
@@ -164,7 +164,7 @@ export default class Card extends Phaser.GameObjects.Image{
             this.glow.setAlpha(0)
 
             this.pile_size_text.setAlpha(0)
-            animations.reduceCardOnHover(this.scene, [this, this.scene])
+            animations.reduceOnHover(this.scene, [this, this.scene])
             this.pointerover = false
         })
 
@@ -307,59 +307,5 @@ export default class Card extends Phaser.GameObjects.Image{
         this.pile_size_text.x = x
         this.pile_size_text.y = y
         this.zoneTag = zoneTag
-    }
-
-    moveCardAnimation(x, y, zoneTag){
-        this.zoneTag = zoneTag
-        const timeline = this.scene.tweens.timeline({
-            onComplete: () => {
-                timeline.destroy()
-            }
-        })
-        timeline.add({
-            targets: [this,this.glow],
-            scale: 0.21,
-            duration: 50
-        })
-        
-        timeline.add({
-            targets: [this,this.glow],
-            scaleX: 0,
-            duration: 100,
-            delay: 30,
-            onComplete: () => {
-                if(this.texture.key == this.cardback){
-                    this.setTexture(this.cardfront)
-                    this.card_augmented.setTexture(this.cardfront)
-                }
-                else{
-                    this.setTexture(this.cardback)
-                    this.card_augmented.setTexture(this.cardback)
-                }
-            }
-        })
-        timeline.add({
-            targets: [this,this.glow],
-            scaleX: 0.21,
-            duration: 50
-        })
-
-        timeline.add({
-            targets: [this,this.glow],
-            scale: 0.2,
-            duration: 50
-        })
-
-        timeline.add({
-            targets: [this,this.glow],
-            x: x,
-            y: y,
-            duration: 200,
-            onComplete: () => {
-                this.updatePosition(x, y, zoneTag)
-            }
-        })
-
-        timeline.play()
     }
 }

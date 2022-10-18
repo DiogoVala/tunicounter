@@ -1,7 +1,7 @@
 var animations = {}
 export default animations
 
-animations.enlargeCardOnHover = function (scene, gameobj_arr){
+animations.enlargeOnHover = function (scene, gameobj_arr){
     const timeline = scene.tweens.timeline({
         onComplete: () => {
             timeline.destroy()
@@ -16,7 +16,7 @@ animations.enlargeCardOnHover = function (scene, gameobj_arr){
     timeline.play()
 }
 
-animations.reduceCardOnHover = function(scene, gameobj_arr){
+animations.reduceOnHover = function(scene, gameobj_arr){
     const timeline = scene.tweens.timeline({
         onComplete: () => {
             timeline.destroy()
@@ -44,6 +44,62 @@ animations.moveCardToPosition = function(scene, card, x, y){
         duration: 200,
         onComplete: () => {
             card.updatePosition(x, y, card.zoneTag)
+        }
+    })
+
+    timeline.play()
+}
+
+animations.flipAndMoveCardToZone = function(scene, card, zone_x, zone_y, zoneTag){
+    //card zone change cant wait for animation to end
+    card.zoneTag = zoneTag
+    
+    const timeline = scene.tweens.timeline({
+        onComplete: () => {
+            timeline.destroy()
+        }
+    })
+    timeline.add({
+        targets: [card, card.glow],
+        scale: 0.21,
+        duration: 50
+    })
+    
+    timeline.add({
+        targets: [card,card.glow],
+        scaleX: 0,
+        duration: 100,
+        delay: 30,
+        onComplete: () => {
+            if(card.texture.key == card.cardback){
+                card.setTexture(card.cardfront)
+                card.card_augmented.setTexture(card.cardfront)
+            }
+            else{
+                card.setTexture(card.cardback)
+                card.card_augmented.setTexture(card.cardback)
+            }
+        }
+    })
+    timeline.add({
+        targets: [card,card.glow],
+        scaleX: 0.21,
+        duration: 50
+    })
+
+    timeline.add({
+        targets: [card,card.glow],
+        scale: 0.2,
+        duration: 50
+    })
+
+    timeline.add({
+        targets: [card,card.glow],
+        x: zone_x,
+        y: zone_y,
+        duration: 200,
+        onComplete: () => {
+            card.updatePosition(zone_x, zone_y, zoneTag)
         }
     })
 

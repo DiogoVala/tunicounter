@@ -458,10 +458,10 @@ function pitchToDeck(scene){
     /* Move cards to deck zone */
     for(var cardIdx of cardPile){
         card = scene.cards_on_board[+cardIdx]
-        card.moveCardAnimation(zone.x, zone.y, zone.zoneTag)
-        card.zoneTag = zone.zoneTag
+        animations.flipAndMoveCardToZone(scene, card, zone.x, zone.y, zone.zoneTag)
         scene.GOD(card, false) // Place on bottom
     }
+    
     /* Reorder deck visually*/
     var cardPile = scene.cardPiles.get("deck")
     for(var cardIdx of cardPile){
