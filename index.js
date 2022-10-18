@@ -453,11 +453,11 @@ function pitchToDeck(scene){
 
 function snapCardToBoard(scene, card){
     var cardPile = scene.cardPiles.get(card.zoneTag)
-    console.log("SnapTo",cardPile)
+    //console.log("SnapTo",cardPile)
     var cardinPile
     for(var cardIdx of cardPile){
         cardinPile = scene.cards_on_board[+cardIdx]
-        cardinPile.updatePosition(cardinPile, card.input.dragStartX, card.input.dragStartY, card.zoneTag)
+        cardinPile.updatePosition(card.input.dragStartX, card.input.dragStartY, card.zoneTag)
     }   
 }
 
@@ -471,6 +471,7 @@ function RectangleContains(rect, x, y)
 };
 
 function groupSelectedCards(scene){
+
     var zoneTag = scene.selectedCards[0].zoneTag
     var newX, newY;
     for (var zone of scene.zones) {

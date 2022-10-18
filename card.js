@@ -43,7 +43,6 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.displayHeight = Math.round(this.displayHeight)
         this.displayWidth = Math.round(this.displayWidth)
-
         scene.input.setDraggable(this)
 
         /* Spawn card in a specific zone */
@@ -112,11 +111,11 @@ export default class Card extends Phaser.GameObjects.Image{
                 //get x,y position of pile (last card of pile always works)
                 var aux_card = this.scene.cards_on_board[+this.scene.cardPiles.get(this.zoneTag)[0]]
                 //to move pile, drag position should be almost very little
-                if(dragX<(aux_card.x+20) && dragX>=(aux_card.x-20) && dragY<(aux_card.y+20) && dragY>=(aux_card.y-20)){
+                if(this.x<(aux_card.x+30) && this.x>=(aux_card.x-30) && this.y<(aux_card.y+20) && this.y>=(aux_card.y-20)){
                     this.draggingPile = true
                     this.cardPile = this.scene.cardPiles.get(this.zoneTag)
                     for(var card of this.cardPile){
-                        this.updatePosition(this.scene.cards_on_board[+card], dragX, dragY, this.zoneTag)
+                        this.scene.cards_on_board[+card].updatePosition(dragX, dragY, this.zoneTag)
                         this.scene.cards_on_board[+card].input.dropZone = false
                     }
                 }
@@ -124,14 +123,14 @@ export default class Card extends Phaser.GameObjects.Image{
                     this.draggingPile = false
                     this.cardPile = [this.objectTag]
                     this.scene.clickDuration = 0
-                    this.updatePosition(this, dragX, dragY, this.zoneTag)
+                    this.updatePosition(dragX, dragY, this.zoneTag)
                 } 
             }
             else{
                 this.draggingPile = false
                 this.cardPile = [this.objectTag]
                 this.scene.clickDuration = 0
-                this.updatePosition(this, dragX, dragY, this.zoneTag)
+                this.updatePosition(dragX, dragY, this.zoneTag)
             }
         })
 
@@ -177,10 +176,10 @@ export default class Card extends Phaser.GameObjects.Image{
             //console.log(cardPile)
             for(var card of cardPile){
                 if (dropZone.zoneTag != "board"){
-                    this.updatePosition(this.scene.cards_on_board[+card], dropZone.x, dropZone.y, dropZone.zoneTag)
+                    this.scene.cards_on_board[+card].updatePosition(dropZone.x, dropZone.y, dropZone.zoneTag)
                 }
                 else{
-                    this.updatePosition(this.scene.cards_on_board[+card], this.x, this.y, cardPile[0].toString())
+                    this.scene.cards_on_board[+card].updatePosition(this.x, this.y, cardPile[0].toString())
                 }
 
                 if(this.scene.isBdown){
@@ -199,7 +198,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 this.scene.cards_on_board[+card].input.dropZone = true
             }
 
-            console.log(this.zoneTag)
+            //console.log(this.zoneTag)
         })
     }
 
@@ -297,14 +296,14 @@ export default class Card extends Phaser.GameObjects.Image{
         }
     }
 
-    updatePosition(card, x, y, zoneTag){
-        card.x = x
-        card.y = y
-        card.glow.x = x
-        card.glow.y = y
-        card.pile_size_text.x = x
-        card.pile_size_text.y = y
-        card.zoneTag = zoneTag
+    updatePosition(x, y, zoneTag){
+        this.x = x
+        this.y = y
+        this.glow.x = x
+        this.glow.y = y
+        this.pile_size_text.x = x
+        this.pile_size_text.y = y
+        this.zoneTag = zoneTag
     }
 
     moveCardAnimation(x, y, zoneTag){
@@ -354,7 +353,7 @@ export default class Card extends Phaser.GameObjects.Image{
             y: y,
             duration: 200,
             onComplete: () => {
-                this.updatePosition(this, x, y, zoneTag)
+                this.updatePosition(x, y, zoneTag)
             }
         })
 
@@ -373,7 +372,7 @@ export default class Card extends Phaser.GameObjects.Image{
             y: y,
             duration: 200,
             onComplete: () => {
-                this.updatePosition(this, x, y, this.zoneTag)
+                this.updatePosition(x, y, this.zoneTag)
             }
         })
 
