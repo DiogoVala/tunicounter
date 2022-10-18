@@ -392,7 +392,6 @@ function update (time)
             }
         }
     }
-
 }
 
 function overedCard(cards){
@@ -571,7 +570,8 @@ function spreadPile(scene, selectedCards){
             offsetX = 0
             offsetY += 0.66*card.displayHeight
         }
-
+        card.glow.setAlpha(0)
+        card.glow.stop('waveSelection')
         scene.children.bringToTop(scene.cards_on_board[+card])
     }
     scene.selectedCards = []

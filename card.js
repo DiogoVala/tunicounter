@@ -148,6 +148,7 @@ export default class Card extends Phaser.GameObjects.Image{
             this.glow.setAlpha(1)
             this.glow.play('wave')
             this.showNumCards()
+            this.enlargeCardOnHover()
             this.pointerover = true
         })
 
@@ -161,7 +162,7 @@ export default class Card extends Phaser.GameObjects.Image{
             this.glow.setAlpha(0)
 
             this.pile_size_text.setAlpha(0)
-            
+            this.reduceCardOnHover()
             this.pointerover = false
         })
 
@@ -378,4 +379,35 @@ export default class Card extends Phaser.GameObjects.Image{
 
         timeline.play()
     }
+
+    enlargeCardOnHover(){
+        const timeline = this.scene.tweens.timeline({
+            onComplete: () => {
+                timeline.destroy()
+            }
+        })
+        timeline.add({
+            targets: [this,this.glow],
+            scaleX: 0.205,
+            scaleY: 0.205,
+            duration: 50,
+        })
+        timeline.play()
+    }
+
+    reduceCardOnHover(){
+        const timeline = this.scene.tweens.timeline({
+            onComplete: () => {
+                timeline.destroy()
+            }
+        })
+        timeline.add({
+            targets: [this,this.glow],
+            scaleX: 0.2,
+            scaleY: 0.2,
+            duration: 50,
+        })
+        timeline.play()
+    }
+
 }
