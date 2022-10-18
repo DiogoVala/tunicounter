@@ -3,6 +3,7 @@ import Dice from './dice.js'
 import LifeCounter from './lifecounter.js'
 import gameZone from './gamezone.js'
 import gameObject from './gameObject.js'
+import animations from './animations.js'
 
 var config = {
     type: Phaser.AUTO,
@@ -189,7 +190,7 @@ function create ()
 
     var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
 
-    for (let index = 0; index < 12; index++) {
+    for (let index = 0; index < 1; index++) {
         for(var card of cardToSpawn){
             this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "deck", (objectTag++).toString()))
         }
@@ -532,7 +533,7 @@ function groupSelectedCards(scene){
         card.glow.setAlpha(0)
         card.glow.stop('waveSelection')
         card.AnimationPlaying = false
-        card.moveToPositionAnimation(newX, newY)
+        animations.moveCardToPosition(scene, card, newX, newY)
         card.zoneTag = zone.zoneTag
         scene.GOD(card, true)
     }
