@@ -53,7 +53,7 @@ animations.moveCardToPosition = function(scene, card, x, y){
 animations.flipAndMoveCardToZone = function(scene, card, zone_x, zone_y, zoneTag){
     //card zone change cant wait for animation to end
     card.zoneTag = zoneTag
-    
+
     const timeline = scene.tweens.timeline({
         onComplete: () => {
             timeline.destroy()
@@ -101,6 +101,42 @@ animations.flipAndMoveCardToZone = function(scene, card, zone_x, zone_y, zoneTag
         onComplete: () => {
             card.updatePosition(zone_x, zone_y, zoneTag)
         }
+    })
+
+    timeline.play()
+}
+
+animations.flipCard = function (scene, card){
+    const timeline = scene.tweens.timeline({
+        onComplete: () => {
+            timeline.destroy()
+        }
+    })
+    timeline.add({
+        targets: [card, card.glow],
+        scale: 0.21,
+        duration: 50
+    })
+
+    timeline.add({
+        targets: [card, card.glow],
+        scaleX: 0,
+        duration: 100,
+        delay: 30,
+        onComplete: () => {
+            card.flip()
+        }
+    })
+    timeline.add({
+        targets: [card,card.glow],
+        scaleX: 0.21,
+        duration: 50
+    })
+
+    timeline.add({
+        targets: [card,card.glow],
+        scale: 0.2,
+        duration: 50
     })
 
     timeline.play()

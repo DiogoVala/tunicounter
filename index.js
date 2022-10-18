@@ -254,7 +254,7 @@ function update (time)
             case 'f':
                 if(this.selectedCards.length > 0){
                     for(var card of this.selectedCards){
-                        card.flip()
+                        animations.flipCard(this, card)
                     }
                 }
                 else if(active_card != false){
@@ -262,7 +262,7 @@ function update (time)
                         flipPile(this, active_card)
                     }
                     else{
-                        active_card.flip()
+                        animations.flipCard(this, active_card)
                     }
                 }
                 break
@@ -461,7 +461,7 @@ function pitchToDeck(scene){
         animations.flipAndMoveCardToZone(scene, card, zone.x, zone.y, zone.zoneTag)
         scene.GOD(card, false) // Place on bottom
     }
-    
+
     /* Reorder deck visually*/
     var cardPile = scene.cardPiles.get("deck")
     for(var cardIdx of cardPile){
