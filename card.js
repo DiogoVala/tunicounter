@@ -108,12 +108,11 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('drag', function(pointer, dragX, dragY) {
-            if(this.scene.clickDuration > 15){
+            if(this.draggingPile){
                 //get x,y position of pile (last card of pile always works)
                 var aux_card = this.scene.cards_on_board[+this.scene.cardPiles.get(this.zoneTag)[0]]
-                //to move pile, drag position should be almost very little
+                //to move pile, drag position should be very little
                 if(this.x<(aux_card.x+30) && this.x>=(aux_card.x-30) && this.y<(aux_card.y+20) && this.y>=(aux_card.y-20)){
-                    this.draggingPile = true
                     this.cardPile = this.scene.cardPiles.get(this.zoneTag)
                     for(var card of this.cardPile){
                         this.scene.cards_on_board[+card].updatePosition(dragX, dragY, this.zoneTag)
@@ -121,16 +120,12 @@ export default class Card extends Phaser.GameObjects.Image{
                     }
                 }
                 else{
-                    this.draggingPile = false
                     this.cardPile = [this.objectTag]
-                    this.scene.clickDuration = 0
                     this.updatePosition(dragX, dragY, this.zoneTag)
                 } 
             }
             else{
-                this.draggingPile = false
                 this.cardPile = [this.objectTag]
-                this.scene.clickDuration = 0
                 this.updatePosition(dragX, dragY, this.zoneTag)
             }
         })
@@ -173,6 +168,9 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('drop', function (pointer, dropZone) {
+
+            //if card dropped it stopped dragging
+            this.draggingPile = false
 
             var cardPile = this.cardPile.slice()
             //console.log(cardPile)

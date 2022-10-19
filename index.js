@@ -351,6 +351,7 @@ function update (time)
             active_card.glow.stop('wave')
             active_card.glow.play('waveTint')
         }
+        active_card.draggingPile = true
     }
 
     /* Selection box */
