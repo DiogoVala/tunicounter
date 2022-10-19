@@ -218,14 +218,6 @@ function update (time)
 
     var active_card = overedCard(this.cards_on_board)
     
-    if(keys.B.isDown){
-        this.isBdown = true
-    }
-    else{
-        this.isBdown = false
-    }
-    
-
     if(newKeyDown){
         var key = keyEvent.toLowerCase()
         switch (key) {
@@ -289,6 +281,7 @@ function update (time)
                 }
                 break
             case 'b':
+                this.isBdown = true
                 if (active_card != false){
                     active_card.glow.stop('wave')
                     active_card.glow.play('waveSink')
@@ -335,6 +328,7 @@ function update (time)
                 }
                 break
             case 'b':
+                this.isBdown = false
                 if (active_card != false){
                     active_card.glow.stop('waveSink')
                     active_card.glow.play('wave')
