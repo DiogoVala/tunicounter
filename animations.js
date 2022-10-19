@@ -151,10 +151,10 @@ animations.tapCard = function (scene, card){
 
     timeline.add({
         targets: [card, card.glow],
-        rotation: card.rotation+3.14/2,
+        rotation: card.rotation+Math.PI/2,
         duration: 100,
         onComplete: () => {
-            if (this.rotation == 6.28){
+            if (this.rotation >= 2*Math.PI){
                 this.rotation = 0
             }
         }

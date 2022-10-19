@@ -203,10 +203,10 @@ export default class Card extends Phaser.GameObjects.Image{
     }
 
     tap(){
-        if (this.rotation == 6.28){
+        if (this.rotation >= 2*Math.PI){
             this.rotation = 0
         }
-        this.rotation += 3.14/2
+        this.rotation += Math.PI/2
     }
 
     flip(){
