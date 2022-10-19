@@ -2,7 +2,6 @@ import animations from './animations.js'
 
 export default class Card extends Phaser.GameObjects.Image{
     pointerover = false
-    tap_angle = 0
     zoneTag
     previousZone
     objectTag
@@ -206,12 +205,10 @@ export default class Card extends Phaser.GameObjects.Image{
     }
 
     tap(){
-        this.tap_angle += 3.14/2
-        
-        if (this.tap_angle == 6.28){
-            this.tap_angle=0
+        if (this.rotation == 6.28){
+            this.rotation = 0
         }
-
+        this.rotation += 3.14/2
     }
 
     flip(){

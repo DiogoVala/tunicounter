@@ -413,16 +413,17 @@ function overedCard(cards){
 
 function flipPile(scene, active_card){
     var cardPile = scene.cardPiles.get(active_card.zoneTag)
-    for(var card of cardPile){
-        scene.cards_on_board[+card].flip()
+    for(var card of cardPile.reverse()){
+        animations.flipCard(scene, scene.cards_on_board[+card])
+        scene.children.bringToTop(scene.cards_on_board[+card])
     }   
 }
 
 function tapPile(scene, active_card){
     var cardPile = scene.cardPiles.get(active_card.zoneTag)
     for(var card of cardPile){
-        scene.cards_on_board[+card].tap()
-    }   
+        animations.tapCard(scene, scene.cards_on_board[+card])
+    }
 }
 
 function shufflePile(scene, zoneTag){
