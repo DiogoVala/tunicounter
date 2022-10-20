@@ -1,6 +1,17 @@
 var animations = {}
 export default animations
 
+animations.createGlowEffect = function(scene, animatioKey, textureKey){
+    scene.anims.create({
+        key: animatioKey,
+        frames: scene.anims.generateFrameNames(textureKey),
+        frameRate: 18,
+        yoyo: false,
+        repeat: -1,
+        repeatDelay: 0
+    })
+}
+
 animations.enlargeOnHover = function (scene, gameobj_arr){
     const timeline = scene.tweens.timeline({
         onComplete: () => {
