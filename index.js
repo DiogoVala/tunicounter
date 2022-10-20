@@ -324,7 +324,7 @@ function RectangleContains(rect, x, y)
 
 function groupSelectedCards(scene){
 
-    var zoneTag = scene.selectedCards[0].zoneTag
+    var zoneTag = scene.selectedCards[0].objectTag
     var newX, newY;
     for (var zone of scene.zones) {
         var ver1 = (zone.border.x-zone.border.width/2 <= scene.input.activePointer.x)
@@ -363,12 +363,19 @@ function groupSelectedCards(scene){
         }
     }
 
-    for (var card of scene.selectedCards) {
+    for (var card of scene.selectedCards.reverse()) {
         card.glow.setAlpha(0)
         card.glow.stop('waveSelection')
         card.AnimationPlaying = false
         animations.moveCardToPosition(scene, card, newX, newY)
-        card.zoneTag = zone.zoneTag
+        
+        if(zone.zoneTag != "board"){
+            card.zoneTag = zoneTag
+        }
+        else{
+            card.zoneTag = zone.zoneTag
+        }
+            
         scene.GOD(card, true)
     }
     scene.selectedCards = []
@@ -396,7 +403,6 @@ function spreadPile(scene, selectedCards){
     }
 
     for(var card of selectedCards){
-
         card.updatePosition(originX+offsetX, originY+offsetY, card.zoneTag)
         card.zoneTag=card.objectTag
         scene.GOD(card, true)
@@ -557,6 +563,7 @@ function keyboardHandler(scene, active_card){
             case 'g':
                 if(scene.selectedCards.length > 0){
                     groupSelectedCards(scene)
+                    
                 }
                 break
             case 'd':
