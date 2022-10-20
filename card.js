@@ -88,13 +88,7 @@ export default class Card extends Phaser.GameObjects.Image{
                     }
                 }
                 else{
-                    /* Isto foi uma ideia, mas é muito confuso aqui*/
                     this.scene.clickDuration = 0
-                    this.glow.stop('glowTint')
-                    if(!this.AnimationPlaying){
-                        this.AnimationPlaying = true
-                        this.glow.play('glowHover')
-                    }
                     this.scene.selectedCards = [this.scene.cards_on_board[+this.objectTag]]
                     this.updatePosition(dragX, dragY, this.zoneTag)
                 } 

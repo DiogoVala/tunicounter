@@ -474,9 +474,10 @@ function clickTimer(scene){
 
 function longClickHandler(scene, active_card){
     if (active_card != false && scene.clickDuration > 15){
-        active_card.glow.stop('glowHover')
+        
         if(!active_card.AnimationPlaying){
             active_card.AnimationPlaying = true
+            active_card.glow.stop('glowHover')
             active_card.glow.play('glowTint')
         }
         active_card.draggingPile = true
