@@ -106,7 +106,7 @@ animations.flipAndMoveCardToZone = function(scene, card, zone_x, zone_y, zoneTag
     timeline.play()
 }
 
-animations.flipCard = function (scene, card){
+animations.flipCard = function (scene, card, onExitFunction){
     const timeline = scene.tweens.timeline({
         onComplete: () => {
             timeline.destroy()
@@ -136,7 +136,10 @@ animations.flipCard = function (scene, card){
     timeline.add({
         targets: [card,card.glow],
         scale: 0.2,
-        duration: 50
+        duration: 50,
+        onComplete: () => {
+            onExitFunction();
+        }
     })
 
     timeline.play()

@@ -42,7 +42,7 @@ function preload ()
     this.load.spritesheet("glowSink", "assets/glowSink.png",  { frameWidth: 586, frameHeight: 802 })
 }
 
-var keyEvent, newKeyDown, newKeyUp
+
 var keys, numbers
 
 
@@ -62,6 +62,9 @@ function create ()
     this.selectedCards = []
     this.drawingBox = false
     this.isBdown = false;
+    this.keyEvent
+    this.newKeyDown
+    this.newKeyUp
 
     /* Environment objects */
     this.bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
@@ -119,8 +122,6 @@ function create ()
             this.scene.drawingBox = true
             this.scene.children.bringToTop(this.scene.selectionBox)
         }
-        
-        
     })
 
     this.input.on('pointerup', function(pointer, currentlyOver) {
@@ -141,13 +142,13 @@ function create ()
     })
 
     this.input.keyboard.on('keydown', function (event) { 
-        keyEvent = event.key
-        newKeyDown = true
+        this.scene.keyEvent = event.key
+        this.scene.newKeyDown = true
     })
 
     this.input.keyboard.on('keyup', function (event) { 
-        keyEvent = event.key
-        newKeyUp = true
+        this.scene.keyEvent = event.key
+        this.scene.newKeyUp = true
     })
 
     this.input.on('dragend', function (pointer, gameObject, dropped) {
@@ -208,193 +209,17 @@ function create ()
 
 function update (time)
 {   
-    //console.log(this.input.activePointer.x, this.input.activePointer.y)
-    if(this.input.activePointer.isDown){
-        this.clickDuration++
-    }
-    else{
-        this.clickDuration = 0
-    }
+     //console.log(this.input.activePointer.x, this.input.activePointer.y)
 
-    var active_card = overedCard(this.cards_on_board)
-    
-    if(newKeyDown){
-        var key = keyEvent.toLowerCase()
-        switch (key) {
-            case  't':
-                if(this.selectedCards.length > 0){
-                    for(var card of this.selectedCards){
-                        animations.tapCard(this, card)
-                    }
-                }
-                else if (active_card != false){
-                    if(active_card.draggingPile){
-                        tapPile(this, active_card)
-                    }
-                    else{
-                        animations.tapCard(this, active_card)
-                    }
-                }
-                break
-            case 'f':
-                if(this.selectedCards.length > 0){
-                    for(var card of this.selectedCards){
-                        animations.flipCard(this, card)
-                    }
-                }
-                else if(active_card != false){
-                    if(active_card.draggingPile){
-                        flipPile(this, active_card)
-                    }
-                    else{
-                        animations.flipCard(this, active_card)
-                    }
-                }
-                break
-            break
-            case 's':
-                if (active_card != false){
-                    active_card.scry()
-                }
-            break
-            case 'r':
-                if(this.dice.pointerover){
-                    this.dice.roll()
-                }
-                else if(active_card != false){
-                    shufflePile(this, active_card.zoneTag)
-                }
-                break
-            case 'p':
-                if(active_card != false && active_card.zoneTag === "pitch"){
-                    pitchToDeck(this)
-                }
-                break
-            case 'g':
-                if(this.selectedCards.length > 0){
-                    groupSelectedCards(this)
-                }
-                break
-            case 'd':
-                if(this.selectedCards.length > 0){
-                    spreadPile(this, this.selectedCards)
-                }
-                break
-            case 'b':
-                this.isBdown = true
-                if (active_card != false){
-                    active_card.glow.stop('wave')
-                    active_card.glow.play('waveSink')
-                }
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-                if(this.dice.pointerover){
-                    this.dice.setSide(+key)
-                }
-            case '7':
-            case '8':
-            case '9':
-            case '0':
-                if(this.lifecounter.pointerover){
-                    this.lifecounter.setVal(+key)
-                }
-            break
-            case '+':
-                if(this.dice.pointerover){
-                    this.dice.increaseSize()
-                }
-                break
-            case '-':
-                if(this.dice.pointerover){
-                    this.dice.decreaseSize()
-                }
-                break
-            default:
-            break
-        }
-        newKeyDown=false
-    }
-
-    if(newKeyUp){
-        var key = keyEvent.toLowerCase()
-        switch (key) {
-            case 's':
-                if (active_card != false){
-                    active_card.unscry()
-                }
-                break
-            case 'b':
-                this.isBdown = false
-                if (active_card != false){
-                    active_card.glow.stop('waveSink')
-                    active_card.glow.play('wave')
-                }
-            default:
-            break
-        }
-        newKeyUp=false
-    }
-
-    if (active_card != false && this.clickDuration > 15){
-        if(!active_card.AnimationPlaying){
-            active_card.AnimationPlaying = true
-            active_card.glow.stop('wave')
-            active_card.glow.play('waveTint')
-        }
-        active_card.draggingPile = true
-    }
-
-    /* Selection box */
-    var width = 0;
-    var height = 0;
-    if(this.drawingBox){
-        if(this.input.activePointer.x <= this.selectionBoxOriginX){
-            width = this.selectionBoxOriginX - this.input.activePointer.x
-            this.selectionBox.x = this.input.activePointer.x
-        }
-        else{
-            width = this.input.activePointer.x - this.selectionBoxOriginX
-        }
-        if(this.input.activePointer.y <= this.selectionBoxOriginY){
-            height = this.selectionBoxOriginY - this.input.activePointer.y
-            this.selectionBox.y = this.input.activePointer.y
-        }
-        else{
-            height = this.input.activePointer.y - this.selectionBoxOriginY
-        }
-        //console.log(this.originX, this.input.activePointer.x)
-        this.selectionBox.setSize(width, height)
-
-        for (var card of this.cards_on_board) {
-            var isSelected = true
-            if(!RectangleContains(this.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
-                isSelected = false
-            if(!RectangleContains(this.selectionBox, card.x+card.displayWidth/2, card.y-card.displayHeight/2)) //Top right
-                isSelected = false
-            if(!RectangleContains(this.selectionBox, card.x-card.displayWidth/2, card.y+card.displayHeight/2)) //bot left
-                isSelected = false
-            if(!RectangleContains(this.selectionBox, card.x+card.displayWidth/2, card.y+card.displayHeight/2)) //bot right
-                isSelected = false
-            if(isSelected){
-                if(!card.AnimationPlaying){
-                    card.glow.setAlpha(1)
-                    card.glow.play('waveSelection')
-                    card.AnimationPlaying = true
-                }
-            }
-            else{
-                card.glow.setAlpha(0)
-                card.AnimationPlaying = false
-            }
-        }
-    }
+    var active_card = hoveredCard(this.cards_on_board)
+   
+    clickTimer(this)
+    selectionBox(this)
+    longClickHandler(this, active_card)
+    keyboardHandler(this, active_card)
 }
 
-function overedCard(cards){
+function hoveredCard(cards){
     var return_card = false
     var card
     for (card of cards){
@@ -409,8 +234,13 @@ function overedCard(cards){
 function flipPile(scene, active_card){
     var cardPile = scene.cardPiles.get(active_card.zoneTag)
     for(var card of cardPile.reverse()){
-        animations.flipCard(scene, scene.cards_on_board[+card])
-        scene.children.bringToTop(scene.cards_on_board[+card])
+        if(scene.cards_on_board[+card].texture.key != scene.cards_on_board[+card].cardback){
+            animations.flipCard(scene, scene.cards_on_board[+card], function(){scene.children.bringToTop(scene.cards_on_board[+card])})
+        }
+        else{
+            scene.children.bringToTop(scene.cards_on_board[+card])
+            animations.flipCard(scene, scene.cards_on_board[+card], function(){})
+        }
     }   
 }
 
@@ -578,4 +408,197 @@ function spreadPile(scene, selectedCards){
     scene.selectedCards = []
     scene.selectionBox.setSize(0,0)
     scene.drawingBox = false
+}
+
+function selectionBox(scene){
+    /* Selection box */
+    var width = 0;
+    var height = 0;
+    if(scene.drawingBox){
+        if(scene.input.activePointer.x <= scene.selectionBoxOriginX){
+            width = scene.selectionBoxOriginX - scene.input.activePointer.x
+            scene.selectionBox.x = scene.input.activePointer.x
+        }
+        else{
+            width = scene.input.activePointer.x - scene.selectionBoxOriginX
+        }
+        if(scene.input.activePointer.y <= scene.selectionBoxOriginY){
+            height = scene.selectionBoxOriginY - scene.input.activePointer.y
+            scene.selectionBox.y = scene.input.activePointer.y
+        }
+        else{
+            height = scene.input.activePointer.y - scene.selectionBoxOriginY
+        }
+        //console.log(this.originX, this.input.activePointer.x)
+        scene.selectionBox.setSize(width, height)
+
+        for (var card of scene.cards_on_board) {
+            var isSelected = true
+            if(!RectangleContains(scene.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
+                isSelected = false
+            if(!RectangleContains(scene.selectionBox, card.x+card.displayWidth/2, card.y-card.displayHeight/2)) //Top right
+                isSelected = false
+            if(!RectangleContains(scene.selectionBox, card.x-card.displayWidth/2, card.y+card.displayHeight/2)) //bot left
+                isSelected = false
+            if(!RectangleContains(scene.selectionBox, card.x+card.displayWidth/2, card.y+card.displayHeight/2)) //bot right
+                isSelected = false
+            if(isSelected){
+                if(!card.AnimationPlaying){
+                    card.glow.setAlpha(1)
+                    card.glow.play('waveSelection')
+                    card.AnimationPlaying = true
+                }
+            }
+            else{
+                card.glow.setAlpha(0)
+                card.AnimationPlaying = false
+            }
+        }
+    }
+}
+
+function clickTimer(scene){
+    if(scene.input.activePointer.isDown){
+        scene.clickDuration++
+    }
+    else{
+        scene.clickDuration = 0
+    }
+}
+
+function longClickHandler(scene, active_card){
+    if (active_card != false && scene.clickDuration > 15){
+        active_card.glow.stop('wave')
+        if(!active_card.AnimationPlaying){
+            active_card.AnimationPlaying = true
+            active_card.glow.play('waveTint')
+        }
+        active_card.draggingPile = true
+    }
+}
+
+function keyboardHandler(scene, active_card){
+    if(scene.newKeyDown){
+        var key = scene.keyEvent.toLowerCase()
+        switch (key) {
+            case  't':
+                if(scene.selectedCards.length > 0){
+                    for(var card of scene.selectedCards){
+                        animations.tapCard(scene, card)
+                    }
+                }
+                else if (active_card != false){
+                    if(active_card.draggingPile){
+                        tapPile(scene, active_card)
+                    }
+                    else{
+                        animations.tapCard(scene, active_card)
+                    }
+                }
+                break
+            case 'f':
+                /* O flipCard não tem em consideração que é uma pile */
+                if(scene.selectedCards.length > 0){
+                    for(var card of scene.selectedCards){
+                        animations.flipCard(scene, card, function(){})
+                    }
+                }
+                /*
+                else if(active_card != false){
+                    if(active_card.draggingPile){
+                        flipPile(scene, active_card)
+                    }
+                    else{
+                        animations.flipCard(scene, active_card, function(){})
+                    }
+                }
+                */
+                break
+            break
+            case 's':
+                if (active_card != false){
+                    active_card.scry()
+                }
+            break
+            case 'r':
+                if(scene.dice.pointerover){
+                    scene.dice.roll()
+                }
+                else if(active_card != false){
+                    shufflePile(scene, active_card.zoneTag)
+                }
+                break
+            case 'p':
+                if(active_card != false && active_card.zoneTag === "pitch"){
+                    pitchToDeck(scene)
+                }
+                break
+            case 'g':
+                if(scene.selectedCards.length > 0){
+                    groupSelectedCards(scene)
+                }
+                break
+            case 'd':
+                if(scene.selectedCards.length > 0){
+                    spreadPile(scene, scene.selectedCards)
+                }
+                break
+            case 'b':
+                scene.isBdown = true
+                if (active_card != false){
+                    active_card.glow.stop('wave')
+                    active_card.glow.play('waveSink')
+                }
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+                if(scene.dice.pointerover){
+                    scene.dice.setSide(+key)
+                }
+            case '7':
+            case '8':
+            case '9':
+            case '0':
+                if(scene.lifecounter.pointerover){
+                    scene.lifecounter.setVal(+key)
+                }
+            break
+            case '+':
+                if(scene.dice.pointerover){
+                    scene.dice.increaseSize()
+                }
+                break
+            case '-':
+                if(scene.dice.pointerover){
+                    scene.dice.decreaseSize()
+                }
+                break
+            default:
+            break
+        }
+        scene.newKeyDown=false
+    }
+
+    if(scene.newKeyUp){
+        var key = scene.keyEvent.toLowerCase()
+        switch (key) {
+            case 's':
+                if (active_card != false){
+                    active_card.unscry()
+                }
+                break
+            case 'b':
+                scene.isBdown = false
+                if (active_card != false){
+                    active_card.glow.stop('waveSink')
+                    active_card.glow.play('wave')
+                }
+            default:
+            break
+        }
+        scene.newKeyUp=false
+    }
 }

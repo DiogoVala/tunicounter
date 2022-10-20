@@ -111,21 +111,32 @@ export default class Card extends Phaser.GameObjects.Image{
             if(this.draggingPile){
                 //get x,y position of pile (last card of pile always works)
                 var aux_card = this.scene.cards_on_board[+this.scene.cardPiles.get(this.zoneTag)[0]]
+                this.scene.selectedCards = []
                 //to move pile, drag position should be very little
                 if(this.x<(aux_card.x+30) && this.x>=(aux_card.x-30) && this.y<(aux_card.y+20) && this.y>=(aux_card.y-20)){
-                    this.cardPile = this.scene.cardPiles.get(this.zoneTag)
-                    for(var card of this.cardPile){
-                        this.scene.cards_on_board[+card].updatePosition(dragX, dragY, this.zoneTag)
-                        this.scene.cards_on_board[+card].input.dropZone = false
+
+                    for(var cardIdx of this.scene.cardPiles.get(this.zoneTag)){
+                        this.scene.selectedCards.push(this.scene.cards_on_board[cardIdx])
+                    }
+                    for(var card of  this.scene.selectedCards){
+                        card.updatePosition(dragX, dragY, this.zoneTag)
+                        card.input.dropZone = false
                     }
                 }
                 else{
-                    this.cardPile = [this.objectTag]
+                    /* Isto foi uma ideia, mas é muito confuso aqui*/
+                    this.scene.clickDuration = 0
+                    this.glow.stop('waveTint')
+                    if(!this.AnimationPlaying){
+                        this.AnimationPlaying = true
+                        this.glow.play('wave')
+                    }
+                    this.scene.selectedCards = [this.scene.cards_on_board[+this.objectTag]]
                     this.updatePosition(dragX, dragY, this.zoneTag)
                 } 
             }
             else{
-                this.cardPile = [this.objectTag]
+                this.scene.selectedCards = [this.scene.cards_on_board[+this.objectTag]]
                 this.updatePosition(dragX, dragY, this.zoneTag)
             }
         })
@@ -172,30 +183,27 @@ export default class Card extends Phaser.GameObjects.Image{
             //if card dropped it stopped dragging
             this.draggingPile = false
 
-            var cardPile = this.cardPile.slice()
-            //console.log(cardPile)
-            for(var card of cardPile){
+            for(var card of this.scene.selectedCards){
                 if (dropZone.zoneTag != "board"){
-                    this.scene.cards_on_board[+card].updatePosition(dropZone.x, dropZone.y, dropZone.zoneTag)
+                    card.updatePosition(dropZone.x, dropZone.y, dropZone.zoneTag)
                 }
                 else{
-                    this.scene.cards_on_board[+card].updatePosition(this.x, this.y, cardPile[0].toString())
+                    card.updatePosition(this.x, this.y, this.scene.selectedCards[0].objectTag.toString())
                 }
 
                 if(this.scene.isBdown){
-                    this.scene.GOD(this.scene.cards_on_board[+card], false)
+                    this.scene.GOD(card, false)
 
                     //reorder deck visually
-                    var cardPile = scene.cardPiles.get(this.scene.cards_on_board[+card].zoneTag).slice()
+                    var cardPile = scene.cardPiles.get(card.zoneTag).slice()
                     for(var cardIdx of cardPile){
-                        scene.children.bringToTop(scene.cards_on_board[+cardIdx])
+                        scene.children.bringToTop(card)
                     }
                 }
                 else{
-                    this.scene.GOD(this.scene.cards_on_board[+card], true)
+                    this.scene.GOD(card, true)
                 }
-
-                this.scene.cards_on_board[+card].input.dropZone = true
+                card.input.dropZone = true
             }
 
             //console.log(this.zoneTag)
