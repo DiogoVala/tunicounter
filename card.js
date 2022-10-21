@@ -66,42 +66,6 @@ export default class Card extends Phaser.GameObjects.Image{
 
         scene.GOD(this, true)
 
-        this.scene.anims.create({
-            key: 'waveTint',
-            frames: this.scene.anims.generateFrameNames('glowTint'),
-            frameRate: 18,
-            yoyo: false,
-            repeat: -1,
-            repeatDelay: 0
-        })
-
-        this.scene.anims.create({
-            key: 'wave',
-            frames: this.scene.anims.generateFrameNames('glow'),
-            frameRate: 18,
-            yoyo: false,
-            repeat: -1,
-            repeatDelay: 0
-        })
-
-        this.scene.anims.create({
-            key: 'waveSelection',
-            frames: this.scene.anims.generateFrameNames('glowSelection'),
-            frameRate: 18,
-            yoyo: false,
-            repeat: -1,
-            repeatDelay: 0
-        })
-        
-        this.scene.anims.create({
-            key: 'waveSink',
-            frames: this.scene.anims.generateFrameNames('glowSink'),
-            frameRate: 18,
-            yoyo: false,
-            repeat: -1,
-            repeatDelay: 0
-        })
-
         this.on('dragstart', function () {
             scene.children.bringToTop(this.glow)
             scene.children.bringToTop(this)
@@ -120,14 +84,14 @@ export default class Card extends Phaser.GameObjects.Image{
             this.input.dropZone = true
             this.showNumCards()
             this.AnimationPlaying = false
-            this.glow.stop('waveTint')
-            this.glow.play('wave')
+            this.glow.stop('glowTint')
+            this.glow.play('glowHover')
         })
 
         this.on('pointerover', function () {
             this.card_augmented.setAlpha(1)
             this.glow.setAlpha(1)
-            this.glow.play('wave')
+            this.glow.play('glowHover')
             this.showNumCards()
             animations.enlargeOnHover(this.scene, [this, this.glow])
             this.pointerover = true

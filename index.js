@@ -36,7 +36,7 @@ function preload ()
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 })
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
-    this.load.spritesheet("glow", "assets/glow.png",  { frameWidth: 586, frameHeight: 802 })
+    this.load.spritesheet("glowHover", "assets/glow.png",  { frameWidth: 586, frameHeight: 802 })
     this.load.spritesheet("glowTint", "assets/glowTint.png",  { frameWidth: 586, frameHeight: 802 })
     this.load.spritesheet("glowSelection", "assets/glowBlue.png",  { frameWidth: 586, frameHeight: 802 })
     this.load.spritesheet("glowSink", "assets/glowSink.png",  { frameWidth: 586, frameHeight: 802 })
@@ -75,6 +75,12 @@ function create ()
     this.selectionBoxOriginX = 0;
     this.selectionBoxOriginY = 0;
     this.add.existing(this.selectionBox)
+
+    /* Glow effects */
+    animations.createGlowEffect(this, 'glowHover', 'glowHover')
+    animations.createGlowEffect(this, 'glowTint', 'glowTint')
+    animations.createGlowEffect(this, 'glowSelection', 'glowSelection')
+    animations.createGlowEffect(this, 'glowSink', 'glowSink')
 
     /* Game objects */
     this.dice = new Dice(this,200,200, 'dice')
@@ -365,7 +371,7 @@ function groupSelectedCards(scene){
 
     for (var card of scene.selectedCards.reverse()) {
         card.glow.setAlpha(0)
-        card.glow.stop('waveSelection')
+        card.glow.stop('glowSelection')
         card.AnimationPlaying = false
         animations.moveCardToPosition(scene, card, newX, newY)
         
@@ -412,7 +418,7 @@ function spreadPile(scene, selectedCards){
             offsetY += 0.66*card.displayHeight
         }
         card.glow.setAlpha(0)
-        card.glow.stop('waveSelection')
+        card.glow.stop('glowSelection')
         scene.children.bringToTop(scene.cards_on_board[+card])
     }
     scene.selectedCards = []
@@ -455,7 +461,7 @@ function selectionBox(scene){
             if(isSelected){
                 if(!card.AnimationPlaying){
                     card.glow.setAlpha(1)
-                    card.glow.play('waveSelection')
+                    card.glow.play('glowSelection')
                     card.AnimationPlaying = true
                 }
             }
@@ -478,10 +484,11 @@ function clickTimer(scene){
 
 function longClickHandler(scene, active_card){
     if (active_card != false && scene.clickDuration > 15){
-        active_card.glow.stop('wave')
+        
         if(!active_card.AnimationPlaying){
             active_card.AnimationPlaying = true
-            active_card.glow.play('waveTint')
+            active_card.glow.stop('glowHover')
+            active_card.glow.play('glowTint')
         }
 
         //Am i moving a pile or not?
@@ -574,8 +581,8 @@ function keyboardHandler(scene, active_card){
             case 'b':
                 scene.isBdown = true
                 if (active_card != false){
-                    active_card.glow.stop('wave')
-                    active_card.glow.play('waveSink')
+                    active_card.glow.stop('glowHover')
+                    active_card.glow.play('glowSink')
                 }
             case '1':
             case '2':
@@ -621,8 +628,8 @@ function keyboardHandler(scene, active_card){
             case 'b':
                 scene.isBdown = false
                 if (active_card != false){
-                    active_card.glow.stop('waveSink')
-                    active_card.glow.play('wave')
+                    active_card.glow.stop('glowSink')
+                    active_card.glow.play('glowHover')
                 }
             default:
             break
