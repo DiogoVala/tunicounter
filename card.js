@@ -24,6 +24,7 @@ export default class Card extends Phaser.GameObjects.Image{
         this.zoneTag = zoneTag
         this.previousZone = zoneTag
         this.objectTag = objectTag
+        this.selected = false
 
         this.pile_size_text = scene.add.text(this.x, this.y, 1, { font: "60px Arial Black", fill: "#fff" })
         this.pile_size_text.setOrigin(0.5,0.5)
@@ -72,30 +73,9 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('drag', function(pointer, dragX, dragY) {
-            if(this.draggingPile){
-                //get x,y position of pile (last card of pile always works)
-                var aux_card = this.scene.cards_on_board[+this.scene.cardPiles.get(this.zoneTag)[0]]
-                this.scene.selectedCards = []
-                //to move pile, drag position should be very little
-                if(this.x<(aux_card.x+30) && this.x>=(aux_card.x-30) && this.y<(aux_card.y+20) && this.y>=(aux_card.y-20)){
-
-                    for(var cardIdx of this.scene.cardPiles.get(this.zoneTag)){
-                        this.scene.selectedCards.push(this.scene.cards_on_board[cardIdx])
-                    }
-                    for(var card of  this.scene.selectedCards){
-                        card.updatePosition(dragX, dragY, this.zoneTag)
-                        card.input.dropZone = false
-                    }
-                }
-                else{
-                    this.scene.clickDuration = 0
-                    this.scene.selectedCards = [this.scene.cards_on_board[+this.objectTag]]
-                    this.updatePosition(dragX, dragY, this.zoneTag)
-                } 
-            }
-            else{
-                this.scene.selectedCards = [this.scene.cards_on_board[+this.objectTag]]
-                this.updatePosition(dragX, dragY, this.zoneTag)
+            for(var card of this.scene.selectedCards){
+                card.updatePosition(dragX, dragY, card.zoneTag)
+                card.input.dropZone = false
             }
         })
 
@@ -116,10 +96,6 @@ export default class Card extends Phaser.GameObjects.Image{
             animations.enlargeOnHover(this.scene, [this, this.glow])
             this.pointerover = true
         })
-
-        this.on('pointerup', function(){
-            
-        })
         
         this.on('pointerout', function () {
             this.card_augmented.setTexture(this.texture.key) // Se o rato sair do scry antes de lagar o "S", a vista volta ao normal
@@ -133,12 +109,16 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('pointerdown', function () {
             this.pile_size_text.setAlpha(0)
-            console.log(this.zoneTag)
+            this.selected = true
+        })
+
+        this.on('pointerup', function(){
+            this.selected = false
         })
 
         this.on('drop', function (pointer, dropZone) {
 
-            //if card dropped it stopped dragging
+            //if card dropped, it stopped dragging
             this.draggingPile = false
 
             for(var card of this.scene.selectedCards){
@@ -164,7 +144,7 @@ export default class Card extends Phaser.GameObjects.Image{
                 card.input.dropZone = true
             }
 
-            //console.log(this.zoneTag)
+            console.log(this.scene.selectedCards)
         })
     }
 

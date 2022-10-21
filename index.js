@@ -143,7 +143,7 @@ function create ()
                 continue
             this.scene.selectedCards.push(card)
         }
-        console.log("Selected Cards:", this.scene.selectedCards)
+        //console.log("Selected Cards:", this.scene.selectedCards)
         this.scene.selectionBox.setSize(0, 0)
     })
 
@@ -218,7 +218,11 @@ function update (time)
      //console.log(this.input.activePointer.x, this.input.activePointer.y)
 
     var active_card = hoveredCard(this.cards_on_board)
-   
+
+    if (active_card != false && active_card.selected){
+        this.selectedCards = [active_card]
+    }
+
     clickTimer(this)
     selectionBox(this)
     longClickHandler(this, active_card)
@@ -326,7 +330,7 @@ function RectangleContains(rect, x, y)
 
 function groupSelectedCards(scene){
 
-    var zoneTag = scene.selectedCards[0].zoneTag
+    var zoneTag = scene.selectedCards[0].objectTag
     var newX, newY;
     for (var zone of scene.zones) {
         var ver1 = (zone.border.x-zone.border.width/2 <= scene.input.activePointer.x)
@@ -346,7 +350,7 @@ function groupSelectedCards(scene){
                     newX = cardSize[0]/2+20
                 }
                 else if(scene.input.activePointer.x+cardSize[0]/2 > scene.bounds[0]) {
-                    console.log("this")
+                    //console.log("this")
                     newX = scene.bounds[0]-20
                 }
                 else{
@@ -365,12 +369,19 @@ function groupSelectedCards(scene){
         }
     }
 
-    for (var card of scene.selectedCards) {
+    for (var card of scene.selectedCards.reverse()) {
         card.glow.setAlpha(0)
         card.glow.stop('glowSelection')
         card.AnimationPlaying = false
         animations.moveCardToPosition(scene, card, newX, newY)
-        card.zoneTag = zone.zoneTag
+        
+        if(zone.zoneTag != "board"){
+            card.zoneTag = zoneTag
+        }
+        else{
+            card.zoneTag = zone.zoneTag
+        }
+            
         scene.GOD(card, true)
     }
     scene.selectedCards = []
@@ -398,7 +409,6 @@ function spreadPile(scene, selectedCards){
     }
 
     for(var card of selectedCards){
-
         card.updatePosition(originX+offsetX, originY+offsetY, card.zoneTag)
         card.zoneTag=card.objectTag
         scene.GOD(card, true)
@@ -480,7 +490,24 @@ function longClickHandler(scene, active_card){
             active_card.glow.stop('glowHover')
             active_card.glow.play('glowTint')
         }
-        active_card.draggingPile = true
+
+        //Am i moving a pile or not?
+        //get x,y position of pile (last card of pile always works)
+        var aux_card = scene.cards_on_board[+scene.cardPiles.get(active_card.zoneTag)[0]]
+        scene.selectedCards = []
+
+        if(aux_card.getBounds().contains(scene.input.x, scene.input.y)){
+            //i am moving a pile, all cards in pile are selected
+            for(var cardIdx of scene.cardPiles.get(active_card.zoneTag)){
+                scene.selectedCards.push(scene.cards_on_board[cardIdx])
+            }
+
+        }
+        else{
+            //not moving a pile, only active card is selected
+            scene.selectedCards = [scene.cards_on_board[+active_card.objectTag]]
+        }
+        //do nothing more , drag does everything you need :)
     }
 }
 
@@ -543,6 +570,7 @@ function keyboardHandler(scene, active_card){
             case 'g':
                 if(scene.selectedCards.length > 0){
                     groupSelectedCards(scene)
+                    
                 }
                 break
             case 'd':
