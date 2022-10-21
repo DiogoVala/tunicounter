@@ -142,9 +142,10 @@ export default class Card extends Phaser.GameObjects.Image{
                     this.scene.GOD(card, true)
                 }
                 card.input.dropZone = true
+                card.selected = false
             }
 
-            console.log(this.scene.selectedCards)
+            //console.log(this.scene.selectedCards)
         })
     }
 
@@ -200,5 +201,17 @@ export default class Card extends Phaser.GameObjects.Image{
         this.pile_size_text.x = x
         this.pile_size_text.y = y
         this.zoneTag = zoneTag
+    }
+
+    setGlowEffect(effectKey){
+
+        switch(effectKey){
+            case "glowHover":
+                break
+            case "glowSelection":
+                break
+            case "glowSink":
+                break
+        }
     }
 }

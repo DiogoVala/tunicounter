@@ -42,9 +42,7 @@ function preload ()
     this.load.spritesheet("glowSink", "assets/glowSink.png",  { frameWidth: 586, frameHeight: 802 })
 }
 
-
 var keys, numbers
-
 
 const cardZoneSize = [114, 160]
 const cardSize = [109, 152]
@@ -61,7 +59,7 @@ function create ()
     this.cards_on_board = []
     this.selectedCards = []
     this.drawingBox = false
-    this.isBdown = false;
+    this.isBdown = false
     this.keyEvent
     this.newKeyDown
     this.newKeyUp
@@ -69,12 +67,9 @@ function create ()
     /* Environment objects */
     this.bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
     this.endTurn = new gameObject(this, 859, 470, 'endTurn').setScale(0.5).setInteractive()
-    this.selectionBox = new Phaser.GameObjects.Rectangle(this, 0,0,0,0).setStrokeStyle(2, 0x962726, 1)
-    this.bounds = [this.bg.x+this.bg.displayWidth, this.bg.y+this.bg.displayHeight]
+    this.selectionBox = this.add.rectangle(0,0,0,0).setStrokeStyle(2, 0x962726, 1).setOrigin(0,0)
 
-    this.selectionBoxOriginX = 0;
-    this.selectionBoxOriginY = 0;
-    this.add.existing(this.selectionBox)
+    this.bounds = [this.bg.x+this.bg.displayWidth, this.bg.y+this.bg.displayHeight]
 
     /* Glow effects */
     animations.createGlowEffect(this, 'glowHover', 'glowHover')
@@ -113,38 +108,26 @@ function create ()
             pitchToDeck(this.scene)
         }
         
-        /* Selection box*/
-        this.scene.selectedCards = []
-        this.scene.selectionBox.setSize(0,0)
+        /* Set origin position for selection box */
         var onTopOf = ""
         try{ 
             onTopOf = currentlyOver[0].type
         }
         catch{}
         if(onTopOf != "card" && onTopOf != "dice" && onTopOf != "lifecounter" && onTopOf != "object" && onTopOf != ""){
-            this.scene.selectionBox.setPosition(pointer.worldX, pointer.worldY)
-            this.scene.selectionBoxOriginX = pointer.worldX;
-            this.scene.selectionBoxOriginY = pointer.worldY;    
             this.scene.drawingBox = true
-            this.scene.children.bringToTop(this.scene.selectionBox)
+            this.scene.selectionBox.setPosition(pointer.x,pointer.y)
+            this.scene.selectedCards=[]
+        }
+        else{
+            this.drawingBox = false
         }
     })
 
     this.input.on('pointerup', function(pointer, currentlyOver) {
-        this.scene.drawingBox = false
-        for (var card of this.scene.cards_on_board) {
-            if(!RectangleContains(this.scene.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
-                continue
-            if(!RectangleContains(this.scene.selectionBox, card.x+card.displayWidth/2, card.y-card.displayHeight/2)) //Top right
-                continue
-            if(!RectangleContains(this.scene.selectionBox, card.x-card.displayWidth/2, card.y+card.displayHeight/2)) //bot left
-                continue
-            if(!RectangleContains(this.scene.selectionBox, card.x+card.displayWidth/2, card.y+card.displayHeight/2)) //bot right
-                continue
-            this.scene.selectedCards.push(card)
-        }
-        //console.log("Selected Cards:", this.scene.selectedCards)
+        /* Reset selection box size */
         this.scene.selectionBox.setSize(0, 0)
+        this.scene.drawingBox = false
     })
 
     this.input.keyboard.on('keydown', function (event) { 
@@ -217,19 +200,19 @@ function update (time)
 {   
      //console.log(this.input.activePointer.x, this.input.activePointer.y)
 
-    var active_card = hoveredCard(this.cards_on_board)
+    var active_card = checkHoveredCard(this.cards_on_board)
 
-    if (active_card != false && active_card.selected){
-        this.selectedCards = [active_card]
-    }
-
-    clickTimer(this)
-    selectionBox(this)
+    //this.selectedCards = [active_card]
+    
+    clickTimer(this) 
     longClickHandler(this, active_card)
     keyboardHandler(this, active_card)
+    updateSelectionBox(this, this.input.activePointer)   
+    checkSelectedCards(this)
+    console.log(this.selectedCards)
 }
 
-function hoveredCard(cards){
+function checkHoveredCard(cards){
     var return_card = false
     var card
     for (card of cards){
@@ -265,10 +248,10 @@ function shufflePile(scene, zoneTag){
     var list = scene.cardPiles.get(zoneTag)
 
     for (let i = list.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = list[i];
-        list[i] = list[j];
-        list[j] = temp;
+        const j = Math.floor(Math.random() * (i + 1))
+        const temp = list[i]
+        list[i] = list[j]
+        list[j] = temp
     }
     for(var card of list){
         scene.children.bringToTop(scene.cards_on_board[+card])
@@ -319,19 +302,10 @@ function snapCardToBoard(scene, card){
     }   
 }
 
-function RectangleContains(rect, x, y)
-{
-    if (rect.width <= 0 || rect.height <= 0)
-    {
-        return false;
-    }
-    return (rect.x <= x && rect.x + rect.width >= x && rect.y <= y && rect.y + rect.height >= y);
-};
-
 function groupSelectedCards(scene){
 
     var zoneTag = scene.selectedCards[0].objectTag
-    var newX, newY;
+    var newX, newY
     for (var zone of scene.zones) {
         var ver1 = (zone.border.x-zone.border.width/2 <= scene.input.activePointer.x)
         var ver2 = (zone.border.x+zone.border.width/2 >= scene.input.activePointer.x)
@@ -426,51 +400,50 @@ function spreadPile(scene, selectedCards){
     scene.drawingBox = false
 }
 
-function selectionBox(scene){
-    /* Selection box */
-    var width = 0;
-    var height = 0;
-    if(scene.drawingBox){
-        if(scene.input.activePointer.x <= scene.selectionBoxOriginX){
-            width = scene.selectionBoxOriginX - scene.input.activePointer.x
-            scene.selectionBox.x = scene.input.activePointer.x
-        }
-        else{
-            width = scene.input.activePointer.x - scene.selectionBoxOriginX
-        }
-        if(scene.input.activePointer.y <= scene.selectionBoxOriginY){
-            height = scene.selectionBoxOriginY - scene.input.activePointer.y
-            scene.selectionBox.y = scene.input.activePointer.y
-        }
-        else{
-            height = scene.input.activePointer.y - scene.selectionBoxOriginY
-        }
-        //console.log(this.originX, this.input.activePointer.x)
-        scene.selectionBox.setSize(width, height)
+function updateSelectionBox(scene, pointer){
+    if(!scene.drawingBox){
+        return
+    }
+    if(pointer.x <= scene.selectionBox.x){
+        scene.selectionBox.width += scene.selectionBox.x - pointer.x
+        scene.selectionBox.x = pointer.x
+    }
+    else{
+        var oldX = scene.selectionBox.x
+        scene.selectionBox.x = pointer.x
+        scene.selectionBox.width += oldX-scene.selectionBox.x
+    }
+    if(pointer.y <= scene.selectionBox.y){
+        scene.selectionBox.height += scene.selectionBox.y - pointer.y
+        scene.selectionBox.y = pointer.y
+    }
+    else{
+        var oldY = scene.selectionBox.y
+        scene.selectionBox.y = pointer.y
+        scene.selectionBox.height += oldY - scene.selectionBox.y
+    }
 
-        for (var card of scene.cards_on_board) {
-            var isSelected = true
-            if(!RectangleContains(scene.selectionBox, card.x-card.displayWidth/2, card.y-card.displayHeight/2)) //Top left
-                isSelected = false
-            if(!RectangleContains(scene.selectionBox, card.x+card.displayWidth/2, card.y-card.displayHeight/2)) //Top right
-                isSelected = false
-            if(!RectangleContains(scene.selectionBox, card.x-card.displayWidth/2, card.y+card.displayHeight/2)) //bot left
-                isSelected = false
-            if(!RectangleContains(scene.selectionBox, card.x+card.displayWidth/2, card.y+card.displayHeight/2)) //bot right
-                isSelected = false
-            if(isSelected){
-                if(!card.AnimationPlaying){
-                    card.glow.setAlpha(1)
-                    card.glow.play('glowSelection')
-                    card.AnimationPlaying = true
-                }
-            }
-            else{
-                card.glow.setAlpha(0)
-                card.AnimationPlaying = false
-            }
+    scene.selectionBox.setPosition(scene.selectionBox.x, scene.selectionBox.y)
+    scene.selectionBox.setSize(scene.selectionBox.width, scene.selectionBox.height)
+
+    for (var card of scene.cards_on_board) {
+        if(Phaser.Geom.Rectangle.ContainsRect(scene.selectionBox.getBounds(), card.getBounds())){ //Top left
+            card.selected = true
+        }
+        else{
+            card.selected = false
         }
     }
+}
+
+function checkSelectedCards(scene){
+    var selectedCards = []
+    for (var card of scene.cards_on_board) {
+        if(card.selected){
+            selectedCards.push(card)
+        }
+    }
+    scene.selectedCards = selectedCards
 }
 
 function clickTimer(scene){
@@ -485,27 +458,19 @@ function clickTimer(scene){
 function longClickHandler(scene, active_card){
     if (active_card != false && scene.clickDuration > 15){
         
-        if(!active_card.AnimationPlaying){
-            active_card.AnimationPlaying = true
-            active_card.glow.stop('glowHover')
-            active_card.glow.play('glowTint')
-        }
-
         //Am i moving a pile or not?
         //get x,y position of pile (last card of pile always works)
         var aux_card = scene.cards_on_board[+scene.cardPiles.get(active_card.zoneTag)[0]]
-        scene.selectedCards = []
 
         if(aux_card.getBounds().contains(scene.input.x, scene.input.y)){
             //i am moving a pile, all cards in pile are selected
             for(var cardIdx of scene.cardPiles.get(active_card.zoneTag)){
-                scene.selectedCards.push(scene.cards_on_board[cardIdx])
+                scene.cards_on_board[cardIdx].selected = true
             }
-
         }
         else{
             //not moving a pile, only active card is selected
-            scene.selectedCards = [scene.cards_on_board[+active_card.objectTag]]
+            scene.cards_on_board[+active_card.objectTag].selected = true
         }
         //do nothing more , drag does everything you need :)
     }
