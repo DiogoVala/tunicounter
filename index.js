@@ -36,10 +36,10 @@ function preload ()
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 })
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
-    this.load.spritesheet("glowHover", "assets/glow.png",  { frameWidth: 586, frameHeight: 802 })
-    this.load.spritesheet("glowTint", "assets/glowTint.png",  { frameWidth: 586, frameHeight: 802 })
+    this.load.spritesheet("glowHover", "assets/glowRed.png",  { frameWidth: 586, frameHeight: 802 })
+    this.load.spritesheet("glowTint", "assets/glowOrange.png",  { frameWidth: 586, frameHeight: 802 })
     this.load.spritesheet("glowSelection", "assets/glowBlue.png",  { frameWidth: 586, frameHeight: 802 })
-    this.load.spritesheet("glowSink", "assets/glowSink.png",  { frameWidth: 586, frameHeight: 802 })
+    this.load.spritesheet("glowSink", "assets/glowGreen.png",  { frameWidth: 586, frameHeight: 802 })
 }
 
 var keys, numbers
@@ -502,18 +502,13 @@ function keyboardHandler(scene, active_card){
                         animations.flipCard(scene, card, function(){})
                     }
                 }
-                /*
-                else if(active_card != false){
-                    if(active_card.draggingPile){
-                        flipPile(scene, active_card)
-                    }
-                    else{
+                else{
+                    if(active_card != false){
                         animations.flipCard(scene, active_card, function(){})
                     }
                 }
-                */
+
                 break
-            break
             case 's':
                 if (active_card != false){
                     active_card.scry()
