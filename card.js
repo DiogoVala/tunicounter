@@ -6,7 +6,6 @@ export default class Card extends Phaser.GameObjects.Image{
     previousZone
     objectTag
     clickDuration = 0
-    cardPile // To track cards being carried under this
     draggingPile = false
     AnimationPlaying = false
     constructor(scene, x, y, cardfront, cardback, glow, zoneTag, objectTag){

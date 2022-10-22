@@ -186,7 +186,6 @@ function create ()
         }
     }
 
-
     for(var card of cardToSpawn){
         this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "pitch", (objectTag++).toString()))
     }
@@ -235,13 +234,6 @@ function flipPile(scene, active_card){
             animations.flipCard(scene, scene.cards_on_board[+card], function(){})
         }
     }   
-}
-
-function tapPile(scene, active_card){
-    var cardPile = scene.cardPiles.get(active_card.zoneTag)
-    for(var card of cardPile){
-        animations.tapCard(scene, scene.cards_on_board[+card])
-    }
 }
 
 function shufflePile(scene, zoneTag){
@@ -396,8 +388,6 @@ function spreadPile(scene, selectedCards){
         scene.children.bringToTop(scene.cards_on_board[+card])
     }
     scene.selectedCards = []
-    scene.selectionBox.setSize(0,0)
-    scene.drawingBox = false
 }
 
 function updateSelectionBox(scene, pointer){
@@ -487,12 +477,7 @@ function keyboardHandler(scene, active_card){
                     }
                 }
                 else if (active_card != false){
-                    if(active_card.draggingPile){
-                        tapPile(scene, active_card)
-                    }
-                    else{
-                        animations.tapCard(scene, active_card)
-                    }
+                    animations.tapCard(scene, card)
                 }
                 break
             case 'f':
@@ -502,11 +487,10 @@ function keyboardHandler(scene, active_card){
                         animations.flipCard(scene, card, function(){})
                     }
                 }
-                else{
-                    if(active_card != false){
-                        animations.flipCard(scene, active_card, function(){})
-                    }
-                }
+                else if(active_card != false){
+                    animations.flipCard(scene, active_card, function(){})
+                 }
+                
 
                 break
             case 's':
