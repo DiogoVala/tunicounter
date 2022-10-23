@@ -208,7 +208,7 @@ function update (time)
     keyboardHandler(this, active_card)
     updateSelectionBox(this, this.input.activePointer)   
     checkSelectedCards(this)
-    console.log(this.selectedCards)
+    //console.log(this.selectedCards)
 }
 
 function checkHoveredCard(cards){
@@ -336,8 +336,7 @@ function groupSelectedCards(scene){
     }
 
     for (var card of scene.selectedCards.reverse()) {
-        card.glow.setAlpha(0)
-        card.glow.stop('glowSelection')
+        card.setGlowEffect(0)
         card.AnimationPlaying = false
         animations.moveCardToPosition(scene, card, newX, newY)
         
@@ -383,8 +382,7 @@ function spreadPile(scene, selectedCards){
             offsetX = 0
             offsetY += 0.66*card.displayHeight
         }
-        card.glow.setAlpha(0)
-        card.glow.stop('glowSelection')
+        card.setGlowEffect(0)
         scene.children.bringToTop(scene.cards_on_board[+card])
     }
     scene.selectedCards = []
@@ -446,8 +444,11 @@ function clickTimer(scene){
 }
 
 function longClickHandler(scene, active_card){
-    if (active_card != false && scene.clickDuration > 15){
-        
+    if (active_card != false && scene.clickDuration > 25){
+        if(!scene.isBdown){
+            //sink glow has privilege over selection glow
+            active_card.setGlowEffect('glowSelection')
+        }
         //Am i moving a pile or not?
         //get x,y position of pile (last card of pile always works)
         var aux_card = scene.cards_on_board[+scene.cardPiles.get(active_card.zoneTag)[0]]
@@ -524,9 +525,10 @@ function keyboardHandler(scene, active_card){
                 break
             case 'b':
                 scene.isBdown = true
-                if (active_card != false){
-                    active_card.glow.stop('glowHover')
-                    active_card.glow.play('glowSink')
+                if (active_card != false && active_card.selected){
+                    //active_card.glow.stop('glowHover')
+                    //active_card.glow.play('glowSink')
+                    active_card.setGlowEffect('glowSink')
                 }
             case '1':
             case '2':
@@ -571,9 +573,8 @@ function keyboardHandler(scene, active_card){
                 break
             case 'b':
                 scene.isBdown = false
-                if (active_card != false){
-                    active_card.glow.stop('glowSink')
-                    active_card.glow.play('glowHover')
+                if (active_card != false && active_card.selected){
+                    active_card.setGlowEffect('glowHover')
                 }
             default:
             break

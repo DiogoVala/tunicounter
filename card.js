@@ -6,8 +6,7 @@ export default class Card extends Phaser.GameObjects.Image{
     previousZone
     objectTag
     clickDuration = 0
-    draggingPile = false
-    AnimationPlaying = false
+    currentGlowAnimation = 0
     constructor(scene, x, y, cardfront, cardback, glow, zoneTag, objectTag){
         super(scene, x, y, cardfront, cardback, glow, zoneTag, objectTag)
         this.type = "card"
@@ -79,18 +78,16 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('dragend', function () {
-            this.draggingPile = false
             this.input.dropZone = true
             this.showNumCards()
-            this.AnimationPlaying = false
-            this.glow.stop('glowTint')
-            this.glow.play('glowHover')
+            //effects applied on drop show also be applied on dragend
+            //if x,y doesnt move the card is not dropped
+            this.setGlowEffect('glowHover')
         })
 
         this.on('pointerover', function () {
             this.card_augmented.setAlpha(1)
-            this.glow.setAlpha(1)
-            this.glow.play('glowHover')
+            this.setGlowEffect('glowHover')
             this.showNumCards()
             animations.enlargeOnHover(this.scene, [this, this.glow])
             this.pointerover = true
@@ -99,7 +96,8 @@ export default class Card extends Phaser.GameObjects.Image{
         this.on('pointerout', function () {
             this.card_augmented.setTexture(this.texture.key) // Se o rato sair do scry antes de lagar o "S", a vista volta ao normal
             this.card_augmented.setAlpha(0)
-            this.glow.setAlpha(0)
+            
+            this.setGlowEffect(0)
 
             this.pile_size_text.setAlpha(0)
             animations.reduceOnHover(this.scene, [this, this.scene])
@@ -117,8 +115,8 @@ export default class Card extends Phaser.GameObjects.Image{
 
         this.on('drop', function (pointer, dropZone) {
 
-            //if card dropped, it stopped dragging
-            this.draggingPile = false
+            //if card dropped, now pointer is only hover and not dragging
+            this.setGlowEffect('glowHover')
 
             for(var card of this.scene.selectedCards){
                 if (dropZone.zoneTag != "board"){
@@ -143,7 +141,6 @@ export default class Card extends Phaser.GameObjects.Image{
                 card.input.dropZone = true
                 card.selected = false
             }
-
             //console.log(this.scene.selectedCards)
         })
     }
@@ -203,14 +200,21 @@ export default class Card extends Phaser.GameObjects.Image{
     }
 
     setGlowEffect(effectKey){
+        //setGlowEffect(0) is used to turnoff glow animation
+        if(effectKey == 0){
+            this.glow.stop(this.currentGlowAnimation)
+            this.glow.setAlpha(0)
+            this.currentGlowAnimation = 0
+        }
 
-        switch(effectKey){
-            case "glowHover":
-                break
-            case "glowSelection":
-                break
-            case "glowSink":
-                break
+        //only needs to change animation if the new animation is not the current one
+        if(this.currentGlowAnimation != effectKey){
+            this.glow.setAlpha(1)
+            if(this.currentGlowAnimation != 0){ //currentGlowAnimation = 0 means no animation playing, cant stop a non animation
+                this.glow.stop(this.currentGlowAnimation)
+            }
+            this.glow.play(effectKey)
+            this.currentGlowAnimation = effectKey
         }
     }
 }
