@@ -478,7 +478,7 @@ function keyboardHandler(scene, active_card){
                     }
                 }
                 else if (active_card != false){
-                    animations.tapCard(scene, card)
+                    animations.tapCard(scene, active_card)
                 }
                 break
             case 'f':
