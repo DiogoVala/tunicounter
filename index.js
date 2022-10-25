@@ -33,6 +33,11 @@ function preload ()
     this.load.image("UPR182-CF",    "assets/UPR182-CF.png",)
     this.load.image("WTR150-CF",    "assets/WTR150-CF.png",)
     this.load.image("endTurn",    "assets/endTurn.png",)
+    this.load.image("0",    "assets/0.png",)
+    this.load.image("1",    "assets/1.png",)
+    this.load.image("2",    "assets/2.png",)
+    this.load.image("3",    "assets/3.png",)
+    this.load.image("4",    "assets/4.png",)
 
     this.load.spritesheet("dice", "assets/dice_sheet.png",  { frameWidth: 128, frameHeight: 128 })
     this.load.spritesheet("nums", "assets/nums.png",  { frameWidth: 314, frameHeight: 500 })
@@ -181,7 +186,8 @@ function create ()
         card.previousZone = card.zoneTag
     }
 
-    var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
+    //var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
+    var cardToSpawn = ['0', '1', '2', '3', '4']
 
     for (let index = 0; index < 1; index++) {
         for(var cardName of cardToSpawn){
