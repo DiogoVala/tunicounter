@@ -344,22 +344,19 @@ function groupSelectedCards(scene){
             }
         }
     }
-
-    for (var card of scene.selectedCards.reverse()) {
+    /* Update cardPiles */
+    for (var card of scene.selectedCards) {
         card.setGlowEffect(0)
-        card.AnimationPlaying = false
         animations.moveCardToPosition(scene, card, newX, newY)
         
         if(zone.zoneTag != "board"){
-            card.zoneTag = zoneTag
-        }
-        else{
             card.zoneTag = zone.zoneTag
         }
-            
+        else{
+            card.zoneTag = zoneTag
+        }
         scene.GOD(card, true)
     }
-    scene.selectedCards = []
 }
 
 function spreadPile(scene, selectedCards){
