@@ -122,6 +122,7 @@ function create ()
         else{
             this.drawingBox = false
         }
+        console.log(this.scene.cardPiles)
     })
 
     this.input.on('pointerup', function(pointer, currentlyOver) {
@@ -242,7 +243,6 @@ function flipPile(scene, active_card){
 
 function shufflePile(scene, zoneTag){
     var list = scene.cardPiles.get(zoneTag)
-
     for (let i = list.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
         const temp = list[i]
@@ -250,12 +250,10 @@ function shufflePile(scene, zoneTag){
         list[j] = temp
     }
     orderPileVisually(scene, list)
-    //scene.cards_on_board[+card].showNumCards() // Só para ficar bonito
-    scene.cardPiles.set(zoneTag, list)
 }
 
-function orderPileVisually(scene, IndexPile){
-    for(var cardIdx of IndexPile){
+function orderPileVisually(scene, cardPile){
+    for(var cardIdx of cardPile){
         scene.children.bringToTop(scene.cards_on_board[+cardIdx])
     }
 }
@@ -286,14 +284,11 @@ function pitchToDeck(scene){
 
     /* Reorder deck visually*/
     var cardPile = scene.cardPiles.get("deck")
-    for(var cardIdx of cardPile){
-        scene.children.bringToTop(scene.cards_on_board[+cardIdx])
-    }
+    orderPileVisually(scene, cardPile)
 }
 
 function snapCardToBoard(scene, card){
     var cardPile = scene.cardPiles.get(card.zoneTag)
-    //console.log("SnapTo",cardPile)
     var cardinPile
     for(var cardIdx of cardPile){
         cardinPile = scene.cards_on_board[+cardIdx]
@@ -306,11 +301,13 @@ function groupSelectedCards(scene){
     var zoneTag = scene.selectedCards[0].objectTag
     var newX, newY
     for (var zone of scene.zones) {
+        /* Bounds verifications to see if cards are being placed in a zone */
         var ver1 = (zone.border.x-zone.border.width/2 <= scene.input.activePointer.x)
         var ver2 = (zone.border.x+zone.border.width/2 >= scene.input.activePointer.x)
         var ver3 = (zone.border.y-zone.border.height/2 <= scene.input.activePointer.y)
         var ver4 = (zone.border.y+zone.border.height/2 >= scene.input.activePointer.y)
 
+        /* Get new XY position for cards */
         if(zone.zoneTag != "board"){
             if(ver1 && ver2 && ver3 && ver4){
                 newX = zone.x
@@ -366,7 +363,6 @@ function spreadPile(scene, selectedCards){
     var offsetY = 0
 
     /* Check if too close to bounds */
-
     if(originX-cardSize[0]/2 < 0){
         originX = cardSize[0]/2+20
     }
@@ -381,18 +377,20 @@ function spreadPile(scene, selectedCards){
     }
 
     for(var card of selectedCards){
-        card.updatePosition(originX+offsetX, originY+offsetY, card.zoneTag)
         card.zoneTag=card.objectTag
+        animations.moveCardToPosition(scene, card, originX+offsetX, originY+offsetY)
         scene.GOD(card, true)
+        card.setGlowEffect(0)
+        scene.children.bringToTop(scene.cards_on_board[+card])
+        card.selected = false
+
+        /* Calculate position of next card */
         offsetX+=0.33*card.displayWidth
         if(originX+offsetX+card.displayWidth/2 > scene.bg.displayWidth){
             offsetX = 0
             offsetY += 0.66*card.displayHeight
         }
-        card.setGlowEffect(0)
-        scene.children.bringToTop(scene.cards_on_board[+card])
     }
-    scene.selectedCards = []
 }
 
 function updateSelectionBox(scene, pointer){
