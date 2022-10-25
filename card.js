@@ -116,7 +116,7 @@ export default class Card extends Phaser.GameObjects.Image{
             //if card dropped, now pointer is only hover and not dragging
             this.setGlowEffect('glowHover')
 
-            for(var card of this.scene.selectedCards){
+            for(var card of this.scene.selectedCards.reverse()){
                 if (dropZone.zoneTag != "board"){
                     card.updatePosition(dropZone.x, dropZone.y, dropZone.zoneTag)
                 }
