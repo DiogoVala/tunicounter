@@ -62,8 +62,6 @@ export default class Card extends Phaser.GameObjects.Image{
         this.glow.x = this.x
         this.glow.y = this.y
 
-        scene.GOD(this, true)
-
         this.on('dragstart', function () {
             scene.children.bringToTop(this.glow)
             scene.children.bringToTop(this)
@@ -128,12 +126,6 @@ export default class Card extends Phaser.GameObjects.Image{
 
                 if(this.scene.isBdown){
                     this.scene.GOD(card, false)
-
-                    //reorder deck visually
-                    var cardPile = scene.cardPiles.get(card.zoneTag).slice()
-                    for(var cardIdx of cardPile){
-                        scene.children.bringToTop(card)
-                    }
                 }
                 else{
                     this.scene.GOD(card, true)

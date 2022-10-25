@@ -170,28 +170,32 @@ function create ()
                 list.unshift(card.objectTag)
             }
             this.cardPiles.set(card.zoneTag, list)
+            orderPileVisually(this, list)
         } 
         /* Create a new list */
         else{
             this.cardPiles.set(card.zoneTag, [card.objectTag])
         }
+        
         card.previousZone = card.zoneTag
     }
 
     var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
 
     for (let index = 0; index < 1; index++) {
-        for(var card of cardToSpawn){
-            this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "deck", (objectTag++).toString()))
+        for(var cardName of cardToSpawn){
+            var card = new Card(this, 718/2, 420/2, cardName, 'cardback', "glow", "deck", (objectTag++).toString())
+            this.cards_on_board.push(card)
+            this.GOD(card, true)
         }
     }
 
     for(var card of cardToSpawn){
-        this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "pitch", (objectTag++).toString()))
+        //this.cards_on_board.push(new Card(this, 718/2, 420/2, card, 'cardback', "glow", "pitch", (objectTag++).toString()))
     }
 
-    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'UPR182-CF', 'cardback', "glow", "head", (objectTag++).toString()))
-    this.cards_on_board.push(new Card(this, 718/2, 420/2, 'WTR150-CF', 'cardback', "glow", "chest", (objectTag++).toString()))
+    //this.cards_on_board.push(new Card(this, 718/2, 420/2, 'UPR182-CF', 'cardback', "glow", "head", (objectTag++).toString()))
+    //this.cards_on_board.push(new Card(this, 718/2, 420/2, 'WTR150-CF', 'cardback', "glow", "chest", (objectTag++).toString()))
 
 }
 
@@ -245,12 +249,15 @@ function shufflePile(scene, zoneTag){
         list[i] = list[j]
         list[j] = temp
     }
-    for(var card of list){
-        scene.children.bringToTop(scene.cards_on_board[+card])
-        scene.cards_on_board[+card].pile_size_text.setAlpha(0)
-    }   
-    scene.cards_on_board[+card].showNumCards() // Só para ficar bonito
+    orderPileVisually(scene, list)
+    //scene.cards_on_board[+card].showNumCards() // Só para ficar bonito
     scene.cardPiles.set(zoneTag, list)
+}
+
+function orderPileVisually(scene, IndexPile){
+    for(var cardIdx of IndexPile){
+        scene.children.bringToTop(scene.cards_on_board[+cardIdx])
+    }
 }
 
 function pitchToDeck(scene){
