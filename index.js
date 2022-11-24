@@ -62,12 +62,13 @@ function create ()
     this.zones = []
     this.cardPiles = new Map()
     this.cards_on_board = []
-    this.selectedCards = []
+    this.selectedCards = new Map()
     this.drawingBox = false
     this.isBdown = false
     this.keyEvent
     this.newKeyDown
     this.newKeyUp
+    this.longclicked = false
 
     /* Environment objects */
     this.bg = this.add.image(1280/2-100, 720/2-35, 'bg').setScale(1.5)
@@ -107,13 +108,13 @@ function create ()
     var board = new gameZone(this, this.bg.displayWidth/2, this.bg.displayHeight/2, this.bg.displayWidth, this.bg.displayHeight, "board")
     this.children.sendToBack(board)
     this.zones.push(board)
-
+    
     this.input.on('pointerdown', function(pointer, currentlyOver) {
         if(this.scene.endTurn.pointerover){
             pitchToDeck(this.scene)
         }
         
-        /* Set origin position for selection box */
+        // Set origin position for selection box 
         var onTopOf = ""
         try{ 
             onTopOf = currentlyOver[0].type
@@ -122,7 +123,7 @@ function create ()
         if(onTopOf != "card" && onTopOf != "dice" && onTopOf != "lifecounter" && onTopOf != "object" && onTopOf != ""){
             this.scene.drawingBox = true
             this.scene.selectionBox.setPosition(pointer.x,pointer.y)
-            this.scene.selectedCards=[]
+            this.scene.selectedCards.clear()
         }
         else{
             this.drawingBox = false
@@ -214,11 +215,13 @@ function update (time)
 
     //this.selectedCards = [active_card]
     
-    clickTimer(this) 
-    longClickHandler(this, active_card)
+    clickTimer(this)
+    if(!this.longclicked){
+        longClickHandler(this, active_card)
+    }
     keyboardHandler(this, active_card)
-    updateSelectionBox(this, this.input.activePointer)   
-    checkSelectedCards(this)
+    //updateSelectionBox(this, this.input.activePointer)   
+    //checkSelectedCards(this)
     //console.log(this.selectedCards)
 }
 
@@ -302,18 +305,19 @@ function snapCardToBoard(scene, card){
     }   
 }
 
+/*
 function groupSelectedCards(scene){
 
     var zoneTag = scene.selectedCards[0].objectTag
     var newX, newY
     for (var zone of scene.zones) {
-        /* Bounds verifications to see if cards are being placed in a zone */
+        // Bounds verifications to see if cards are being placed in a zone 
         var ver1 = (zone.border.x-zone.border.width/2 <= scene.input.activePointer.x)
         var ver2 = (zone.border.x+zone.border.width/2 >= scene.input.activePointer.x)
         var ver3 = (zone.border.y-zone.border.height/2 <= scene.input.activePointer.y)
         var ver4 = (zone.border.y+zone.border.height/2 >= scene.input.activePointer.y)
 
-        /* Get new XY position for cards */
+        // Get new XY position for cards 
         if(zone.zoneTag != "board"){
             if(ver1 && ver2 && ver3 && ver4){
                 newX = zone.x
@@ -321,7 +325,7 @@ function groupSelectedCards(scene){
                 break
             }
             else{
-                /* Por algum motivo o bounds aqui não corresponde ao tamanho do campo */
+                // Por algum motivo o bounds aqui não corresponde ao tamanho do campo 
                 if(scene.input.activePointer.x-cardSize[0]/2 < 0){
                     newX = cardSize[0]/2+20
                 }
@@ -344,7 +348,7 @@ function groupSelectedCards(scene){
             }
         }
     }
-    /* Update cardPiles */
+    // Update cardPiles 
     for (var card of scene.selectedCards) {
         card.setGlowEffect(0)
         animations.moveCardToPosition(scene, card, newX, newY)
@@ -358,14 +362,15 @@ function groupSelectedCards(scene){
         scene.GOD(card, true)
     }
 }
-
+*/
+/*
 function spreadPile(scene, selectedCards){
     var originX = scene.input.activePointer.x
     var originY = scene.input.activePointer.y
     var offsetX = 0
     var offsetY = 0
 
-    /* Check if too close to bounds */
+    // Check if too close to bounds 
     if(originX-cardSize[0]/2 < 0){
         originX = cardSize[0]/2+20
     }
@@ -387,7 +392,7 @@ function spreadPile(scene, selectedCards){
         scene.children.bringToTop(scene.cards_on_board[+card])
         card.selected = false
 
-        /* Calculate position of next card */
+        // Calculate position of next card 
         offsetX+=0.33*card.displayWidth
         if(originX+offsetX+card.displayWidth/2 > scene.bg.displayWidth){
             offsetX = 0
@@ -441,7 +446,7 @@ function checkSelectedCards(scene){
     }
     scene.selectedCards = selectedCards
 }
-
+*/
 function clickTimer(scene){
     if(scene.input.activePointer.isDown){
         scene.clickDuration++
@@ -453,6 +458,7 @@ function clickTimer(scene){
 
 function longClickHandler(scene, active_card){
     if (active_card != false && scene.clickDuration > 25){
+        scene.longclicked = true
         if(!scene.isBdown){
             //sink glow has privilege over selection glow
             active_card.setGlowEffect('glowSelection')
@@ -464,12 +470,14 @@ function longClickHandler(scene, active_card){
         if(aux_card.getBounds().contains(scene.input.x, scene.input.y)){
             //i am moving a pile, all cards in pile are selected
             for(var cardIdx of scene.cardPiles.get(active_card.zoneTag)){
-                scene.cards_on_board[cardIdx].selected = true
+                if(!scene.selectedCards.has(cardIdx)){
+                    scene.selectedCards.set(cardIdx,scene.cards_on_board[cardIdx])
+                }
+                else{
+                    scene.selectedCards.delete(cardIdx)
+                    scene.selectedCards.set(cardIdx,scene.cards_on_board[cardIdx])
+                }
             }
-        }
-        else{
-            //not moving a pile, only active card is selected
-            scene.cards_on_board[+active_card.objectTag].selected = true
         }
         //do nothing more , drag does everything you need :)
     }
@@ -517,18 +525,18 @@ function keyboardHandler(scene, active_card){
                 break
             case 'p':
                 if(active_card != false && active_card.zoneTag === "pitch"){
-                    pitchToDeck(scene)
+                    //pitchToDeck(scene)
                 }
                 break
             case 'g':
                 if(scene.selectedCards.length > 0){
-                    groupSelectedCards(scene)
+                    //groupSelectedCards(scene)
                     
                 }
                 break
             case 'd':
                 if(scene.selectedCards.length > 0){
-                    spreadPile(scene, scene.selectedCards)
+                    //spreadPile(scene, scene.selectedCards)
                 }
                 break
             case 'b':

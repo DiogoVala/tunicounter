@@ -69,7 +69,7 @@ export default class Card extends Phaser.GameObjects.Image{
         })
 
         this.on('drag', function(pointer, dragX, dragY) {
-            for(var card of this.scene.selectedCards){
+            for(let [cardIdx, card] of this.scene.selectedCards){
                 card.updatePosition(dragX, dragY, card.zoneTag)
                 card.input.dropZone = false
             }
@@ -105,23 +105,32 @@ export default class Card extends Phaser.GameObjects.Image{
         this.on('pointerdown', function () {
             this.pile_size_text.setAlpha(0)
             this.selected = true
+            if(!scene.selectedCards.has(this.objectTag)){
+                scene.selectedCards.set(this.objectTag,this)
+            }
         })
 
         this.on('pointerup', function(){
             this.selected = false
+            this.scene.longclicked = false
+            this.scene.selectedCards.clear()
         })
 
         this.on('drop', function (pointer, dropZone) {
 
+            //DROP NEEDS TO WORK DIFFERENTLY FOR SINK OR TOP DROP
+            
             //if card dropped, now pointer is only hover and not dragging
             this.setGlowEffect('glowHover')
-
-            for(var card of this.scene.selectedCards){
+            for(let [cardIdx, card] of this.scene.selectedCards){
                 if (dropZone.zoneTag != "board"){
                     card.updatePosition(dropZone.x, dropZone.y, dropZone.zoneTag)
                 }
                 else{
-                    card.updatePosition(this.x, this.y, this.scene.selectedCards[0].objectTag.toString())
+                    //all selected cards are in pile of bottom card
+                    //get first key of selectedCards
+                    let bottom_cardIdx = this.scene.selectedCards.entries().next().value[0]
+                    card.updatePosition(this.x, this.y, bottom_cardIdx)
                 }
 
                 if(this.scene.isBdown){
@@ -132,7 +141,10 @@ export default class Card extends Phaser.GameObjects.Image{
                 }
                 card.input.dropZone = true
                 card.selected = false
+
+                console.log(card.zoneTag)
             }
+            this.scene.selectedCards.clear()
             //console.log(this.scene.selectedCards)
         })
     }
