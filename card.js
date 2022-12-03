@@ -116,33 +116,61 @@ export default class Card extends Phaser.GameObjects.Image{
             this.scene.selectedCards.clear()
         })
 
-        this.on('drop', function (pointer, dropZone) {
-
-            //DROP NEEDS TO WORK DIFFERENTLY FOR SINK OR TOP DROP
-            
+        this.on('drop', function (pointer, dropZone) {            
             //if card dropped, now pointer is only hover and not dragging
             this.setGlowEffect('glowHover')
+
             for(let [cardIdx, card] of this.scene.selectedCards){
                 if (dropZone.zoneTag != "board"){
-                    card.updatePosition(dropZone.x, dropZone.y, dropZone.zoneTag)
-                }
+                    // it means we are dropping in a zone or in a pile
+                    if(this.scene.isBdown){
+                        // if we are sinking the card, we need to fix the pile
+
+                        // sinked card objectTag is now the zoneTag
+                        card.updatePosition(dropZone.x, dropZone.y, card.objectTag)
+                        this.scene.GOD(card, false)
+
+                        // now we have to fix all the cards in the pile
+                        // to follow the new bottom card
+
+                        // make a shallow copy of the cardPile
+                        let cardPile = [...this.scene.cardPiles.get(dropZone.zoneTag)] 
+
+                        //fix the zoneTag of each card and update its position on the cardPiles list
+                        for(let idx of cardPile){
+                            this.scene.cards_on_board[parseInt(idx)].updatePosition(card.x, card.y, card.objectTag)
+                            this.scene.GOD(this.scene.cards_on_board[parseInt(idx)],true)
+                        }
+                    }
+                    else{
+                        card.updatePosition(dropZone.x, dropZone.y, dropZone.zoneTag)
+                        this.scene.GOD(card, true)
+                    }   
+                }    
                 else{
                     //all selected cards are in pile of bottom card
                     //get first key of selectedCards
                     let bottom_cardIdx = this.scene.selectedCards.entries().next().value[0]
                     card.updatePosition(this.x, this.y, bottom_cardIdx)
+                    this.scene.GOD(card, true)
                 }
 
-                if(this.scene.isBdown){
+                /*if(this.scene.isBdown){
                     this.scene.GOD(card, false)
+                    //tenho que chamar o god com o planeontop=true nas outras todas!!
+                    let cardPile = this.scene.cardPiles.get(dropZone.zoneTag)
+                    for(let idx of cardPile){
+                        this.scene.cards_on_board[+idx].updatePosition(card.x, card.y, card.objectTag)
+                        this.scene.GOD(this.scene.cards_on_board[+idx],true)
+                    }
                 }
                 else{
                     this.scene.GOD(card, true)
-                }
+                }*/
                 card.input.dropZone = true
                 card.selected = false
 
-                console.log(card.zoneTag)
+                //console.log(card.zoneTag)
             }
             this.scene.selectedCards.clear()
             //console.log(this.scene.selectedCards)

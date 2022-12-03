@@ -169,9 +169,10 @@ function create ()
 
         /* Add to new (existing) list */
         if(this.cardPiles.has(card.zoneTag)){
-            var list = this.cardPiles.get(card.zoneTag)
+            let list = this.cardPiles.get(card.zoneTag)
             if(placeOnTop){
                 list.push(card.objectTag)
+                //this.cardPiles.set(card.zoneTag, list)
             }
             else{
                 list.unshift(card.objectTag)
@@ -182,8 +183,10 @@ function create ()
         /* Create a new list */
         else{
             this.cardPiles.set(card.zoneTag, [card.objectTag])
+            let list = this.cardPiles.get(card.zoneTag)
+            orderPileVisually(this, list)
         }
-        
+
         card.previousZone = card.zoneTag
     }
 
