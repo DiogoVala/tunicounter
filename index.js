@@ -105,10 +105,11 @@ function create ()
     this.zones.push(new gameZone(this, 859, 398-35, cardZoneSize[0], cardZoneSize[1], "pitch"))
     this.zones.push(new gameZone(this, 988, 569-35, cardZoneSize[0], cardZoneSize[1], "banished"))
 
-    var board = new gameZone(this, this.bg.displayWidth/2, this.bg.displayHeight/2, this.bg.displayWidth, this.bg.displayHeight, "board")
-    this.children.sendToBack(board)
-    this.zones.push(board)
+    //var board = new gameZone(this, this.bg.displayWidth/2, this.bg.displayHeight/2, this.bg.displayWidth, this.bg.displayHeight, "board")
+    //this.children.sendToBack(board)
+    //this.zones.push(board)
     
+    /*
     this.input.on('pointerdown', function(pointer, currentlyOver) {
         if(this.scene.endTurn.pointerover){
             pitchToDeck(this.scene)
@@ -130,12 +131,15 @@ function create ()
         }
         console.log(this.scene.cardPiles)
     })
+    
 
     this.input.on('pointerup', function(pointer, currentlyOver) {
-        /* Reset selection box size */
+        // Reset selection box size
         this.scene.selectionBox.setSize(0, 0)
         this.scene.drawingBox = false
     })
+    */
+
 
     this.input.keyboard.on('keydown', function (event) { 
         this.scene.keyEvent = event.key
@@ -146,16 +150,18 @@ function create ()
         this.scene.keyEvent = event.key
         this.scene.newKeyUp = true
     })
-
+    /*
     this.input.on('dragend', function (pointer, gameObject, dropped) {
         if(gameObject.type == "card")
             if(!dropped){
                 snapCardToBoard(this.scene, gameObject)
             }
     })
+    */
 
+    /*
     this.GOD = function(card, placeOnTop){
-        /* Remove from previous list */
+        // Remove from previous list
         if(this.cardPiles.has(card.previousZone)){
             var list = this.cardPiles.get(card.previousZone)
             var idx = list.indexOf(card.objectTag)
@@ -167,7 +173,7 @@ function create ()
             }
         }
 
-        /* Add to new (existing) list */
+        // Add to new (existing) list 
         if(this.cardPiles.has(card.zoneTag)){
             let list = this.cardPiles.get(card.zoneTag)
             if(placeOnTop){
@@ -180,7 +186,7 @@ function create ()
             this.cardPiles.set(card.zoneTag, list)
             orderPileVisually(this, list)
         } 
-        /* Create a new list */
+        // Create a new list 
         else{
             this.cardPiles.set(card.zoneTag, [card.objectTag])
             let list = this.cardPiles.get(card.zoneTag)
@@ -189,6 +195,7 @@ function create ()
 
         card.previousZone = card.zoneTag
     }
+    */
 
     //var cardToSpawn = ['ARC000', 'ELE000-CF', 'EVR000-CF', 'MON000-CF', 'UPR000', 'WTR000-CF', 'CRU000-CF']
     var cardToSpawn = ['0', '1', '2', '3', '4']
@@ -197,7 +204,7 @@ function create ()
         for(var cardName of cardToSpawn){
             var card = new Card(this, 718/2, 420/2, cardName, 'cardback', "glow", "deck", (objectTag++).toString())
             this.cards_on_board.push(card)
-            this.GOD(card, true)
+            //this.GOD(card, true)
         }
     }
 
@@ -212,21 +219,15 @@ function create ()
 
 function update (time)
 {   
-     //console.log(this.input.activePointer.x, this.input.activePointer.y)
+    //console.log(this.input.activePointer.x, this.input.activePointer.y)
 
     var active_card = checkHoveredCard(this.cards_on_board)
 
-    //this.selectedCards = [active_card]
+
     
-    clickTimer(this)
-    if(!this.longclicked){
-        longClickHandler(this, active_card)
-    }
     keyboardHandler(this, active_card)
-    //updateSelectionBox(this, this.input.activePointer)   
-    //checkSelectedCards(this)
-    //console.log(this.selectedCards)
 }
+
 
 function checkHoveredCard(cards){
     var return_card = false
@@ -239,7 +240,7 @@ function checkHoveredCard(cards){
     }
     return return_card
 }
-
+/*
 function flipPile(scene, active_card){
     var cardPile = scene.cardPiles.get(active_card.zoneTag)
     for(var card of cardPile.reverse()){
@@ -269,7 +270,8 @@ function orderPileVisually(scene, cardPile){
         scene.children.bringToTop(scene.cards_on_board[+cardIdx])
     }
 }
-
+*/
+/*
 function pitchToDeck(scene){
 
     var zone, card
@@ -281,20 +283,20 @@ function pitchToDeck(scene){
         return
     }
 
-    /* Grab zone object */
+    // Grab zone object
     for(zone of scene.zones){
         if(zone.zoneTag == "deck"){
             break
         }
     }
-    /* Move cards to deck zone */
+    // Move cards to deck zone
     for(var cardIdx of cardPile){
         card = scene.cards_on_board[+cardIdx]
         animations.flipAndMoveCardToZone(scene, card, zone.x, zone.y, zone.zoneTag)
         scene.GOD(card, false) // Place on bottom
     }
 
-    /* Reorder deck visually*/
+    // Reorder deck visually
     var cardPile = scene.cardPiles.get("deck")
     orderPileVisually(scene, cardPile)
 }
@@ -307,7 +309,7 @@ function snapCardToBoard(scene, card){
         cardinPile.updatePosition(card.input.dragStartX, card.input.dragStartY, card.zoneTag)
     }   
 }
-
+*/
 /*
 function groupSelectedCards(scene){
 
@@ -450,6 +452,7 @@ function checkSelectedCards(scene){
     scene.selectedCards = selectedCards
 }
 */
+/*
 function clickTimer(scene){
     if(scene.input.activePointer.isDown){
         scene.clickDuration++
@@ -485,99 +488,34 @@ function longClickHandler(scene, active_card){
         //do nothing more , drag does everything you need :)
     }
 }
-
+*/
 function keyboardHandler(scene, active_card){
     if(scene.newKeyDown){
         var key = scene.keyEvent.toLowerCase()
         switch (key) {
             case  't':
-                if(scene.selectedCards.length > 0){
-                    for(var card of scene.selectedCards){
-                        animations.tapCard(scene, card)
-                    }
-                }
-                else if (active_card != false){
-                    animations.tapCard(scene, active_card)
-                }
+                active_card.tap()
                 break
-            case 'f':
-                /* O flipCard não tem em consideração que é uma pile */
-                if(scene.selectedCards.length > 0){
-                    for(var card of scene.selectedCards){
-                        animations.flipCard(scene, card, function(){})
-                    }
-                }
-                else if(active_card != false){
-                    animations.flipCard(scene, active_card, function(){})
-                 }
                 
-
+            case 'f':
+                active_card.flip()
                 break
+
             case 's':
-                if (active_card != false){
-                    active_card.scry()
-                }
-            break
+                active_card.scry()
+                break
+
             case 'r':
-                if(scene.dice.pointerover){
-                    scene.dice.roll()
-                }
-                else if(active_card != false){
-                    shufflePile(scene, active_card.zoneTag)
-                }
+
                 break
             case 'p':
                 if(active_card != false && active_card.zoneTag === "pitch"){
                     //pitchToDeck(scene)
                 }
                 break
-            case 'g':
-                if(scene.selectedCards.length > 0){
-                    //groupSelectedCards(scene)
-                    
-                }
-                break
-            case 'd':
-                if(scene.selectedCards.length > 0){
-                    //spreadPile(scene, scene.selectedCards)
-                }
-                break
-            case 'b':
-                scene.isBdown = true
-                if (active_card != false && active_card.selected){
-                    //active_card.glow.stop('glowHover')
-                    //active_card.glow.play('glowSink')
-                    active_card.setGlowEffect('glowSink')
-                }
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-                if(scene.dice.pointerover){
-                    scene.dice.setSide(+key)
-                }
-            case '7':
-            case '8':
-            case '9':
-            case '0':
-                if(scene.lifecounter.pointerover){
-                    scene.lifecounter.setVal(+key)
-                }
-            break
-            case '+':
-                if(scene.dice.pointerover){
-                    scene.dice.increaseSize()
-                }
-                break
-            case '-':
-                if(scene.dice.pointerover){
-                    scene.dice.decreaseSize()
-                }
-                break
+
             default:
-            break
+                break
         }
         scene.newKeyDown=false
     }
